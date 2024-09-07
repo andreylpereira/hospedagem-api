@@ -1,13 +1,17 @@
 package com.senai.api.models;
 
+import java.util.Set;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "usuario")
+@Table(name = "usuarios")
 public class Usuario {
 
 	@Id
@@ -20,16 +24,26 @@ public class Usuario {
 	private String email;
 	private boolean ativo;
 
+	@OneToMany(mappedBy = "usuario_criador", cascade = CascadeType.ALL)
+	private Set<Reserva> criador;
+
+	@OneToMany(mappedBy = "usuario_editor", cascade = CascadeType.ALL)
+	private Set<Reserva> editor;
+
 	public Usuario() {
 	}
 
-	public Usuario(int id, String cpf, String senha, String perfil, String nome, String email, boolean ativo) {
+	public Usuario(int id, String cpf, String senha, String perfil, String nome, String email, boolean ativo,
+			Set<Reserva> criador, Set<Reserva> editor) {
 		this.id = id;
 		this.cpf = cpf;
 		this.senha = senha;
 		this.perfil = perfil;
 		this.nome = nome;
+		this.email = email;
 		this.ativo = ativo;
+		this.criador = criador;
+		this.editor = editor;
 	}
 
 	public int getId() {
@@ -86,6 +100,22 @@ public class Usuario {
 
 	public void setAtivo(boolean ativo) {
 		this.ativo = ativo;
+	}
+
+	public Set<Reserva> getCriador() {
+		return criador;
+	}
+
+	public void setCriador(Set<Reserva> criador) {
+		this.criador = criador;
+	}
+
+	public Set<Reserva> getEditor() {
+		return editor;
+	}
+
+	public void setEditor(Set<Reserva> editor) {
+		this.editor = editor;
 	}
 
 }
