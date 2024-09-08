@@ -20,6 +20,7 @@ import com.senai.api.enums.Perfil;
 public class SecurityConfig {
 
 	private final JwtAuthEntryPoint authEntryPoint;
+	@SuppressWarnings("unused")
 	private final CustomUserDetailsService customUserDetailsService;
 
 	@Autowired
@@ -28,6 +29,7 @@ public class SecurityConfig {
 		this.customUserDetailsService = customUserDetailsService;
 	}
 
+	@SuppressWarnings("removal")
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -35,9 +37,11 @@ public class SecurityConfig {
 				.exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(authEntryPoint))
 				.sessionManagement(
 						sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests.requestMatchers("/api/usuario/**")
-						.permitAll().requestMatchers("/api/auth/login/**").permitAll().requestMatchers("/api/test/**")
-						.hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao()).anyRequest().authenticated())
+				.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+						.requestMatchers("/api/auth/login/**").permitAll()
+						.requestMatchers("/api/usuario/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao())
+						.requestMatchers("/api/hospedagem/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao(),Perfil.FUNCIONARIO.getDescricao())
+						.anyRequest().authenticated())
 				.httpBasic();
 
 		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

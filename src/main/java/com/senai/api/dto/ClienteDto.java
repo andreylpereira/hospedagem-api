@@ -1,16 +1,16 @@
 package com.senai.api.dto;
 
-public class UsuarioDto {
 
+public class ClienteDto {
 	private Integer id;
 	private String cpf;
-	private String senha;
-	private String perfil;
 	private String nome;
 	private String email;
-	private boolean ativo;
+	private String telefone;
+	private String endereco;
+	private Integer reservaId;
 
-	public UsuarioDto() {
+	public ClienteDto() {
 	}
 
 	public Integer getId() {
@@ -29,22 +29,6 @@ public class UsuarioDto {
 		this.cpf = cpf;
 	}
 
-	public String getSenha() {
-		return senha;
-	}
-
-	public void setSenha(String senha) {
-		this.senha = senha;
-	}
-
-	public String getPerfil() {
-		return perfil;
-	}
-
-	public void setPerfil(String perfil) {
-		this.perfil = perfil;
-	}
-
 	public String getNome() {
 		return nome;
 	}
@@ -61,12 +45,28 @@ public class UsuarioDto {
 		this.email = email;
 	}
 
-	public boolean isAtivo() {
-		return ativo;
+	public String getTelefone() {
+		return telefone;
 	}
 
-	public void setAtivo(boolean ativo) {
-		this.ativo = ativo;
+	public void setTelefone(String telefone) {
+		this.telefone = telefone;
+	}
+
+	public String getEndereco() {
+		return endereco;
+	}
+
+	public void setEndereco(String endereco) {
+		this.endereco = endereco;
+	}
+
+	public Integer getReservaId() {
+		return reservaId;
+	}
+
+	public void setReservaId(Integer reservaId) {
+		this.reservaId = reservaId;
 	}
 
 }

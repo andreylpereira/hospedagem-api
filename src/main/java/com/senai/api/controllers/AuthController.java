@@ -25,7 +25,9 @@ import com.senai.api.services.UsuarioService;
 public class AuthController {
 
 	private AuthenticationManager authenticationManager;
+	@SuppressWarnings("unused")
 	private UsuarioRepository usuarioRepository;
+	@SuppressWarnings("unused")
 	private PasswordEncoder passwordEncoder;
 	private JWTGenerator jwtGenerator;
 	private UsuarioService usuarioService;

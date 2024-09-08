@@ -15,4 +15,9 @@ public interface UsuarioService {
 	Boolean isCpf(String cpf);
 
 	Boolean validCpf(String cpf);
+
+	ResponseEntity<?> editar(UsuarioDto usuarioDto, Integer usuarioId);
+
+	ResponseEntity<?> editarSenha(UsuarioDto usuarioDto, Integer usuarioId);
+
 }

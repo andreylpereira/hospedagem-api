@@ -2,74 +2,70 @@ package com.senai.api.models;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.senai.api.enums.Status;
+
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "reservas")
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Reserva {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
+
+    @ManyToOne
+    @JoinColumn(name = "responsavel_id")
+    @JsonIgnore
+    private Usuario responsavel;
 
 	@ManyToOne
-	@JoinColumn(name = "usuario_criador_id", nullable = false)
-	private Usuario usuario_criador;
-
-	@ManyToOne
-	@JoinColumn(name = "usuario_editor_id", nullable = false)
-	private Usuario usuario_editor;
-
-	@ManyToOne
-	@JoinColumn(name = "cliente_id", nullable = false)
+	@JoinColumn(name = "cliente_id")
+	@JsonIgnore
 	private Cliente cliente;
 
 	@ManyToOne
-	@JoinColumn(name = "acomodacao_id", nullable = false)
+	@JoinColumn(name = "acomodacao_id")
+	@JsonIgnore
 	private Acomodacao acomodacao;
 
-	private LocalDateTime criado;
-	private LocalDateTime editado;
 	private LocalDateTime dataInicio;
 	private LocalDateTime dataFim;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "status")
+	private Status status;
 
 	public Reserva() {
 	}
 
-	public Reserva(Long id, Usuario usuario_criador, Usuario usuario_editor, Cliente cliente, Acomodacao acomodacao,
-			LocalDateTime criado, LocalDateTime editado, LocalDateTime dataInicio, LocalDateTime dataFim) {
+	public Reserva(Integer id, Usuario responsavel, Cliente cliente, Acomodacao acomodacao, LocalDateTime dataInicio,
+			LocalDateTime dataFim, Status status) {
 		this.id = id;
-		this.usuario_criador = usuario_criador;
-		this.usuario_editor = usuario_editor;
+		this.responsavel = responsavel;
 		this.cliente = cliente;
 		this.acomodacao = acomodacao;
-		this.criado = criado;
-		this.editado = editado;
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
+		this.status = status;
 	}
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public Usuario getUsuario_criador() {
-		return usuario_criador;
+	public Usuario getResponsavel() {
+		return responsavel;
 	}
 
-	public void setUsuario_criador(Usuario usuario_criador) {
-		this.usuario_criador = usuario_criador;
-	}
-
-	public Usuario getUsuario_editor() {
-		return usuario_editor;
-	}
-
-	public void setUsuario_editor(Usuario usuario_editor) {
-		this.usuario_editor = usuario_editor;
+	public void setResponsavel(Usuario responsavel) {
+		this.responsavel = responsavel;
 	}
 
 	public Cliente getCliente() {
@@ -88,22 +84,6 @@ public class Reserva {
 		this.acomodacao = acomodacao;
 	}
 
-	public LocalDateTime getCriado() {
-		return criado;
-	}
-
-	public void setCriado(LocalDateTime criado) {
-		this.criado = criado;
-	}
-
-	public LocalDateTime getEditado() {
-		return editado;
-	}
-
-	public void setEditado(LocalDateTime editado) {
-		this.editado = editado;
-	}
-
 	public LocalDateTime getDataInicio() {
 		return dataInicio;
 	}
@@ -118,6 +98,14 @@ public class Reserva {
 
 	public void setDataFim(LocalDateTime dataFim) {
 		this.dataFim = dataFim;
+	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
 	}
 
 }

@@ -2,6 +2,9 @@ package com.senai.api.models;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,11 +15,12 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "usuarios")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Usuario {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 	private String cpf;
 	private String senha;
 	private String perfil;
@@ -24,17 +28,15 @@ public class Usuario {
 	private String email;
 	private boolean ativo;
 
-	@OneToMany(mappedBy = "usuario_criador", cascade = CascadeType.ALL)
-	private Set<Reserva> criador;
-
-	@OneToMany(mappedBy = "usuario_editor", cascade = CascadeType.ALL)
-	private Set<Reserva> editor;
+    @OneToMany(mappedBy = "responsavel", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private Set<Reserva> responsavel;
 
 	public Usuario() {
 	}
 
-	public Usuario(int id, String cpf, String senha, String perfil, String nome, String email, boolean ativo,
-			Set<Reserva> criador, Set<Reserva> editor) {
+	public Usuario(Integer id, String cpf, String senha, String perfil, String nome, String email, boolean ativo,
+			Set<Reserva> responsavel) {
 		this.id = id;
 		this.cpf = cpf;
 		this.senha = senha;
@@ -42,16 +44,15 @@ public class Usuario {
 		this.nome = nome;
 		this.email = email;
 		this.ativo = ativo;
-		this.criador = criador;
-		this.editor = editor;
+		this.responsavel = responsavel;
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setId(Integer usuario_id) {
+		this.id = usuario_id;
 	}
 
 	public String getCpf() {
@@ -102,20 +103,12 @@ public class Usuario {
 		this.ativo = ativo;
 	}
 
-	public Set<Reserva> getCriador() {
-		return criador;
+	public Set<Reserva> getResponsavel() {
+		return responsavel;
 	}
 
-	public void setCriador(Set<Reserva> criador) {
-		this.criador = criador;
-	}
-
-	public Set<Reserva> getEditor() {
-		return editor;
-	}
-
-	public void setEditor(Set<Reserva> editor) {
-		this.editor = editor;
+	public void setResponsavel(Set<Reserva> responsavel) {
+		this.responsavel = responsavel;
 	}
 
 }
