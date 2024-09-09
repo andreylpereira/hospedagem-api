@@ -2,6 +2,7 @@ package com.senai.api.models;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.senai.api.enums.Status;
@@ -18,7 +19,7 @@ public class Reserva {
 
     @ManyToOne
     @JoinColumn(name = "responsavel_id")
-    @JsonIgnore
+    @JsonBackReference
     private Usuario responsavel;
 
 	@ManyToOne

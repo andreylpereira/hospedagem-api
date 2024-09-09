@@ -39,6 +39,10 @@ public class SecurityConfig {
 						sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
 						.requestMatchers("/api/auth/login/**").permitAll()
+						.requestMatchers("/api/usuario/lista/**").hasAnyAuthority(Perfil.FUNCIONARIO.getDescricao(), Perfil.ADMINISTRADOR.getDescricao())
+						.requestMatchers("/api/usuario/atualizarSenha/**").hasAnyAuthority(Perfil.FUNCIONARIO.getDescricao(), Perfil.ADMINISTRADOR.getDescricao())
+						.requestMatchers("/api/usuario/atualizarUsuario/**").hasAnyAuthority(Perfil.FUNCIONARIO.getDescricao(), Perfil.ADMINISTRADOR.getDescricao())
+						.requestMatchers("/api/usuario/cadastrarUsuario/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao())
 						.requestMatchers("/api/usuario/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao())
 						.requestMatchers("/api/hospedagem/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao(),Perfil.FUNCIONARIO.getDescricao())
 						.anyRequest().authenticated())

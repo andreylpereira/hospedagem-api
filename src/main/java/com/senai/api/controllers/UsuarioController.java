@@ -26,14 +26,15 @@ public class UsuarioController {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 	
-	@GetMapping("/{usuarioId}")
-	public Usuario getUsuario(@RequestBody @PathVariable Integer usuarioId) {
-		return usuarioRepository.getReferenceById(usuarioId);
-	}
 	
 	@GetMapping("/lista")
-	public List<Usuario> getUsuario() {
+	public List<Usuario> getUsuarios() {
 		return usuarioRepository.findAll();
+	}
+	
+	@GetMapping("/lista/{usuarioId}")
+	public Usuario getUsuario(@PathVariable Integer usuarioId) {
+		return usuarioRepository.getReferenceById(usuarioId);
 	}
 
 	@PostMapping("/cadastrarUsuario")

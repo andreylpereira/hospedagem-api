@@ -11,6 +11,7 @@ public class AcomodacaoDto {
 	private String descricao;
 	private int capacidade;
 	private Integer reservaId;
+	private double preco;
 	private Set<Amenidade> amenidades;
 
 	public AcomodacaoDto() {
@@ -54,6 +55,14 @@ public class AcomodacaoDto {
 
 	public void setReservaId(Integer reservaId) {
 		this.reservaId = reservaId;
+	}
+
+	public double getPreco() {
+		return preco;
+	}
+
+	public void setPreco(double preco) {
+		this.preco = preco;
 	}
 
 	public Set<Amenidade> getAmenidades() {
