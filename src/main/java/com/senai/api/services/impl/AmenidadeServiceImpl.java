@@ -29,7 +29,7 @@ public class AmenidadeServiceImpl implements AmenidadeService {
 		}
 		return ResponseEntity.status(HttpStatus.CONFLICT).body("Já existe uma amenidade com este nome.");
 	}
-
+ 
 	@Override
 	public ResponseEntity<?> editar(AmenidadeDto amenidadeDto, Integer amenidadeId) {
 		boolean isExists = amenidadeRepository.existsById(amenidadeId);
@@ -40,8 +40,7 @@ public class AmenidadeServiceImpl implements AmenidadeService {
 			amenidadeRepository.save(amenidade);
 			return ResponseEntity.status(HttpStatus.CREATED).body("Amenidade atualizada com sucesso");
 		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND)
-				.body("Amenidade com ID " + amenidadeId + " não encontrada.");
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Amenidade com ID " + amenidadeId + " não encontrada.");
 	}
 
 }

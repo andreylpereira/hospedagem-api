@@ -1,5 +1,6 @@
 package com.senai.api.services.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -39,10 +40,14 @@ public class ReservaServiceImpl implements ReservaService {
 	@SuppressWarnings("unused")
 	@Override
 	public ResponseEntity<?> cadastrar(ReservaDto reservaDto) {
-
+		
 		ResponseEntity<?> validarReserva = validarReservaDto(reservaDto);
+		Boolean isAvailable = verificarDisponibilidade(reservaDto.getAcomodacaoId(), reservaDto.getDataInicio(), reservaDto.getDataFim());
+
 		if (validarReserva != null) {
 			return validarReserva;
+		} else if (!isAvailable) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O período solicitado de reserva está ocupado.");
 		}
 
 		Usuario responsavel = fetchUsuario(reservaDto.getResponsavelId());
@@ -79,8 +84,14 @@ public class ReservaServiceImpl implements ReservaService {
 		}
 
 		ResponseEntity<?> validarReserva = validarReservaDto(reservaDto);
+		Boolean isAvailable = verificarDisponibilidade(reservaDto.getAcomodacaoId(), reservaDto.getDataInicio(), reservaDto.getDataFim());
+		
 		if (validarReserva != null) {
 			return validarReserva;
+		} else if (isAvailable && (reservaExistente.getAcomodacao().getId() == reservaDto.getAcomodacaoId())) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O período solicitado de reserva está ocupado.");
+		} else if (!isAvailable && (reservaExistente.getStatus() == reservaDto.getStatus())) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nenhum dado possível foi alterado.");
 		}
 
 		Usuario responsavel = fetchUsuario(reservaDto.getResponsavelId());
@@ -100,8 +111,6 @@ public class ReservaServiceImpl implements ReservaService {
 		reservaExistente.setResponsavel(responsavel);
 		reservaExistente.setCliente(cliente);
 		reservaExistente.setAcomodacao(acomodacao);
-		reservaExistente.setDataInicio(reservaDto.getDataInicio());
-		reservaExistente.setDataFim(reservaDto.getDataFim());
 		reservaExistente.setStatus(reservaDto.getStatus());
 
 		reservaRepository.save(reservaExistente);
@@ -109,6 +118,7 @@ public class ReservaServiceImpl implements ReservaService {
 	}
 
 	private ResponseEntity<?> validarReservaDto(ReservaDto reservaDto) {
+		
 		if (reservaDto.getClienteId() == null || reservaDto.getClienteId() == null
 				|| reservaDto.getAcomodacaoId() == null) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados obrigatórios não fornecidos.");
@@ -143,11 +153,10 @@ public class ReservaServiceImpl implements ReservaService {
 	}
 
 	public ReservaDto reservaById(Integer reservaId) {
-		
+
 		Reserva reserva = reservaRepository.findById(reservaId)
 				.orElseThrow(() -> new NoSuchElementException("Reserva não encontrada com o ID: " + reservaId));
 
-		
 		Integer responsavelId = reserva.getResponsavel() != null ? reserva.getResponsavel().getId() : null;
 		Integer clienteId = reserva.getCliente() != null ? reserva.getCliente().getId() : null;
 		Integer acomodacaoId = reserva.getAcomodacao() != null ? reserva.getAcomodacao().getId() : null;
@@ -155,4 +164,24 @@ public class ReservaServiceImpl implements ReservaService {
 		return new ReservaDto(reserva.getId(), responsavelId, clienteId, acomodacaoId, reserva.getDataInicio(),
 				reserva.getDataFim(), reserva.getStatus());
 	}
+
+	public Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim) {
+		List<ReservaDto> reservas = listarReservas();
+
+		List<ReservaDto> reservasAcomodacao = reservas.stream()
+				.filter(reserva -> reserva.getAcomodacaoId().equals(acomodacaoId)).toList();
+
+		for (ReservaDto reserva : reservasAcomodacao) {
+			LocalDateTime reservaInicio = reserva.getDataInicio();
+			LocalDateTime reservaFim = reserva.getDataFim();
+
+			if (dataInicio.isBefore(reservaFim) && dataFim.isAfter(reservaInicio)) {
+
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 }
