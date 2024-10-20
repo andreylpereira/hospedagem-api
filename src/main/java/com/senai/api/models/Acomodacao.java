@@ -19,6 +19,7 @@ public class Acomodacao {
 	private String descricao;
 	private int capacidade;
 	private double preco;
+	private boolean habilitado;
 
 	@OneToMany(mappedBy = "acomodacao", cascade = CascadeType.ALL)
 	private Set<Reserva> reservas;
@@ -32,7 +33,7 @@ public class Acomodacao {
 	}
 
 	public Acomodacao(Integer id, String nome, String descricao, int capacidade, double preco, Set<Reserva> reservas,
-			Set<Amenidade> amenidades) {
+			Set<Amenidade> amenidades, boolean habilitado) {
 		this.id = id;
 		this.nome = nome;
 		this.descricao = descricao;
@@ -40,6 +41,7 @@ public class Acomodacao {
 		this.preco = preco;
 		this.reservas = reservas;
 		this.amenidades = amenidades;
+		this.habilitado = habilitado;
 	}
 
 	public Integer getId() {
@@ -98,4 +100,13 @@ public class Acomodacao {
 		this.amenidades = amenidades;
 	}
 
+	public boolean isHabilitado() {
+		return habilitado;
+	}
+
+	public void setHabilitado(boolean habilitado) {
+		this.habilitado = habilitado;
+	}
+
+	
 }

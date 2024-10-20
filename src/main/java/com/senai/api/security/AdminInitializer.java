@@ -32,7 +32,7 @@ public class AdminInitializer implements CommandLineRunner {
 			admin.setNome("Admin");
 			admin.setSenha(passwordEncoder.encode(senha));
 			admin.setPerfil(Perfil.ADMINISTRADOR.getDescricao());
-			admin.setAtivo(true);
+			admin.setHabilitado(true);
 			usuarioRepository.save(admin);
 		}
 	}

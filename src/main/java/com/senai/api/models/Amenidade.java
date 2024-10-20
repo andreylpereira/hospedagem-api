@@ -14,7 +14,6 @@ public class Amenidade {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	private String nome;
-	private boolean habilitado;
 
 	@ManyToMany(mappedBy = "amenidades")
 	private Set<Acomodacao> acomodacoes;
@@ -22,10 +21,9 @@ public class Amenidade {
 	public Amenidade() {
 	}
 
-	public Amenidade(Integer id, String nome, boolean habilitado, Set<Acomodacao> acomodacoes) {
+	public Amenidade(Integer id, String nome, Set<Acomodacao> acomodacoes) {
 		this.id = id;
 		this.nome = nome;
-		this.habilitado = habilitado;
 		this.acomodacoes = acomodacoes;
 	}
 
@@ -43,14 +41,6 @@ public class Amenidade {
 
 	public void setNome(String nome) {
 		this.nome = nome;
-	}
-
-	public boolean isHabilitado() {
-		return habilitado;
-	}
-
-	public void setHabilitado(boolean habilitado) {
-		this.habilitado = habilitado;
 	}
 
 	public Set<Acomodacao> getAcomodacoes() {

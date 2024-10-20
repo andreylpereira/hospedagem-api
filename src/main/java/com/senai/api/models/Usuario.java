@@ -26,7 +26,7 @@ public class Usuario {
 	private String perfil;
 	private String nome;
 	private String email;
-	private boolean ativo;
+	private boolean habilitado;
 
     @OneToMany(mappedBy = "responsavel", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -35,7 +35,7 @@ public class Usuario {
 	public Usuario() {
 	}
 
-	public Usuario(Integer id, String cpf, String senha, String perfil, String nome, String email, boolean ativo,
+	public Usuario(Integer id, String cpf, String senha, String perfil, String nome, String email, boolean habilitado,
 			Set<Reserva> responsavel) {
 		this.id = id;
 		this.cpf = cpf;
@@ -43,7 +43,7 @@ public class Usuario {
 		this.perfil = perfil;
 		this.nome = nome;
 		this.email = email;
-		this.ativo = ativo;
+		this.habilitado = habilitado;
 		this.responsavel = responsavel;
 	}
 
@@ -95,12 +95,12 @@ public class Usuario {
 		this.email = email;
 	}
 
-	public boolean isAtivo() {
-		return ativo;
+	public boolean ishabilitado() {
+		return habilitado;
 	}
 
-	public void setAtivo(boolean ativo) {
-		this.ativo = ativo;
+	public void setHabilitado(boolean habilitado) {
+		this.habilitado = habilitado;
 	}
 
 	public Set<Reserva> getResponsavel() {

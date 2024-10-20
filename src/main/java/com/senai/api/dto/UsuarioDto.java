@@ -8,7 +8,7 @@ public class UsuarioDto {
 	private String perfil;
 	private String nome;
 	private String email;
-	private boolean ativo;
+	private boolean habilitado;
 
 	public UsuarioDto() {
 	}
@@ -61,12 +61,12 @@ public class UsuarioDto {
 		this.email = email;
 	}
 
-	public boolean isAtivo() {
-		return ativo;
+	public boolean isHabilitado() {
+		return habilitado;
 	}
 
-	public void setAtivo(boolean ativo) {
-		this.ativo = ativo;
+	public void SetHabilitado(boolean habilitado) {
+		this.habilitado = habilitado;
 	}
 
 }

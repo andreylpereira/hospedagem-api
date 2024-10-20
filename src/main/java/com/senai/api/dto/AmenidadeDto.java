@@ -5,7 +5,6 @@ public class AmenidadeDto {
 	private Integer id;
 	private String nome;
 	private boolean habilitado;
-	private double preco;
 	
 	
 	public AmenidadeDto() {
@@ -30,13 +29,4 @@ public class AmenidadeDto {
 	public void setHabilitado(boolean habilitado) {
 		this.habilitado = habilitado;
 	}
-
-	public double getPreco() {
-		return preco;
-	}
-
-	public void setPreco(double preco) {
-		this.preco = preco;
-	}
-	
 }

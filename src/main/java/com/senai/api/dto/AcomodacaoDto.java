@@ -13,6 +13,7 @@ public class AcomodacaoDto {
 	private Integer reservaId;
 	private double preco;
 	private Set<Amenidade> amenidades;
+	private boolean habilitado;
 
 	public AcomodacaoDto() {
 	}
@@ -73,6 +74,12 @@ public class AcomodacaoDto {
 		this.amenidades = amenidades;
 	}
 
+	public boolean isHabilitado() {
+		return habilitado;
+	}
 
+	public void setHabilitado(boolean habilitado) {
+		this.habilitado = habilitado;
+	}
 
 }
