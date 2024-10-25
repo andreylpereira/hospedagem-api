@@ -61,7 +61,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 			usuario.setSenha(senhaCriptografada);
 			usuario.setId(usuarioId);
 			usuarioRepository.save(usuario);
- 
+
 			return ResponseEntity.status(HttpStatus.CREATED).body("Usuário atualizado com sucesso.");
 
 		}
@@ -71,17 +71,17 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public ResponseEntity<?> editarSenha(UsuarioDto usuarioDto, Integer usuarioId) {
-		
+
 		Usuario usuario = usuarioRepository.getReferenceById(usuarioId);
 		if (usuario.getId() == usuarioId) {
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.getSenha());
 			usuario.setSenha(senhaCriptografada);
 			usuarioRepository.save(usuario);
 			return ResponseEntity.status(HttpStatus.CREATED).body("Senha atualizadaa com sucesso.");
-					}
+		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + usuarioId + " não encontrado.");
 	}
-	
+
 	public Boolean isCpf(String CPF) {
 
 		if (CPF.equals("00000000000") || CPF.equals("11111111111") || CPF.equals("22222222222")

@@ -30,11 +30,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 		Usuario usuario = usuarioRepository.findByCpf(username)
 				.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
-		
-		if (!usuario.ishabilitado()) {
-		    throw new IllegalStateException("Usuário não está habilitado.");
+
+		if (!usuario.isHabilitado()) {
+			throw new IllegalStateException("Usuário não está habilitado.");
 		}
-		
+
 		return new User(usuario.getCpf(), usuario.getSenha(), mapRolesToAuthorities(usuario));
 	}
 

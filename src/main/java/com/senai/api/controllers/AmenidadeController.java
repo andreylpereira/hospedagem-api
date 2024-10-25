@@ -23,26 +23,27 @@ public class AmenidadeController {
 
 	@Autowired
 	private AmenidadeService amenidadeService;
-	
+
 	@Autowired
 	private AmenidadeRepository amenidadeRepository;
 
-	@PostMapping("/amenidades")
-	public ResponseEntity<?> insertAmenidade(@RequestBody AmenidadeDto amenidadeDto) {
-		return amenidadeService.cadastrar(amenidadeDto);
+	@PostMapping("{usuarioId}/amenidades")
+	public ResponseEntity<?> insertAmenidade(@RequestBody AmenidadeDto amenidadeDto, @PathVariable Integer usuarioId) {
+		return amenidadeService.cadastrar(amenidadeDto, usuarioId);
 	}
-	
-	@PutMapping("/amenidades/{amenidadeId}") 
-	public ResponseEntity<?> updateAmenidades(@RequestBody AmenidadeDto amenidadeDto,@PathVariable Integer amenidadeId) {
-		return amenidadeService.editar(amenidadeDto, amenidadeId);	
+
+	@PutMapping("{usuarioId}/amenidades/{amenidadeId}")
+	public ResponseEntity<?> updateAmenidades(@RequestBody AmenidadeDto amenidadeDto, @PathVariable Integer usuarioId,
+			@PathVariable Integer amenidadeId) {
+		return amenidadeService.editar(amenidadeDto, usuarioId, amenidadeId);
 	}
-	
-	@GetMapping("/amenidades") 
+
+	@GetMapping("/amenidades")
 	public List<Amenidade> getAmenidades() {
-		return amenidadeRepository.findAll();		
+		return amenidadeRepository.findAll();
 	}
-	
-	@GetMapping("/amenidades/{amenidadeId}") 
+
+	@GetMapping("/amenidades/{amenidadeId}")
 	public Amenidade recuperarAmenidades(@PathVariable Integer amenidadeId) {
 		return amenidadeRepository.getReferenceById(amenidadeId);
 	}

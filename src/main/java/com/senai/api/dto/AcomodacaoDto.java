@@ -10,6 +10,7 @@ public class AcomodacaoDto {
 	private String nome;
 	private String descricao;
 	private int capacidade;
+	private Integer funcionarioId;
 	private Integer reservaId;
 	private double preco;
 	private Set<Amenidade> amenidades;
@@ -48,6 +49,14 @@ public class AcomodacaoDto {
 
 	public void setCapacidade(int capacidade) {
 		this.capacidade = capacidade;
+	}
+
+	public Integer getFuncionarioId() {
+		return funcionarioId;
+	}
+
+	public void setFuncionarioId(Integer funcionarioId) {
+		this.funcionarioId = funcionarioId;
 	}
 
 	public Integer getReservaId() {

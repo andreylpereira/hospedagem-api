@@ -40,9 +40,10 @@ public class ReservaServiceImpl implements ReservaService {
 	@SuppressWarnings("unused")
 	@Override
 	public ResponseEntity<?> cadastrar(ReservaDto reservaDto) {
-		
+
 		ResponseEntity<?> validarReserva = validarReservaDto(reservaDto);
-		Boolean isAvailable = verificarDisponibilidade(reservaDto.getAcomodacaoId(), reservaDto.getDataInicio(), reservaDto.getDataFim());
+		Boolean isAvailable = verificarDisponibilidade(reservaDto.getAcomodacaoId(), reservaDto.getDataInicio(),
+				reservaDto.getDataFim());
 
 		if (validarReserva != null) {
 			return validarReserva;
@@ -50,11 +51,11 @@ public class ReservaServiceImpl implements ReservaService {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O período solicitado de reserva está ocupado.");
 		}
 
-		Usuario responsavel = fetchUsuario(reservaDto.getResponsavelId());
+		Usuario funcionario = fetchUsuario(reservaDto.getFuncionarioId());
 		Cliente cliente = fetchCliente(reservaDto.getClienteId());
 		Acomodacao acomodacao = fetchAcomodacao(reservaDto.getAcomodacaoId());
 
-		if (responsavel == null) {
+		if (funcionario == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário criador não encontrado.");
 		}
 		if (cliente == null) {
@@ -66,7 +67,7 @@ public class ReservaServiceImpl implements ReservaService {
 
 		Reserva reserva = new Reserva();
 		BeanUtils.copyProperties(reservaDto, reserva);
-		reserva.setResponsavel(responsavel);
+		reserva.setFuncionario(funcionario);
 		reserva.setCliente(cliente);
 		reserva.setAcomodacao(acomodacao);
 
@@ -84,8 +85,9 @@ public class ReservaServiceImpl implements ReservaService {
 		}
 
 		ResponseEntity<?> validarReserva = validarReservaDto(reservaDto);
-		Boolean isAvailable = verificarDisponibilidade(reservaDto.getAcomodacaoId(), reservaDto.getDataInicio(), reservaDto.getDataFim());
-		
+		Boolean isAvailable = verificarDisponibilidade(reservaDto.getAcomodacaoId(), reservaDto.getDataInicio(),
+				reservaDto.getDataFim());
+
 		if (validarReserva != null) {
 			return validarReserva;
 		} else if (isAvailable && (reservaExistente.getAcomodacao().getId() == reservaDto.getAcomodacaoId())) {
@@ -94,11 +96,11 @@ public class ReservaServiceImpl implements ReservaService {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nenhum dado possível foi alterado.");
 		}
 
-		Usuario responsavel = fetchUsuario(reservaDto.getResponsavelId());
+		Usuario funcionario = fetchUsuario(reservaDto.getFuncionarioId());
 		Cliente cliente = fetchCliente(reservaDto.getClienteId());
 		Acomodacao acomodacao = fetchAcomodacao(reservaDto.getAcomodacaoId());
 
-		if (responsavel == null) {
+		if (funcionario == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário criador não encontrado.");
 		}
 		if (cliente == null) {
@@ -108,7 +110,7 @@ public class ReservaServiceImpl implements ReservaService {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Acomodação não encontrada.");
 		}
 
-		reservaExistente.setResponsavel(responsavel);
+		reservaExistente.setFuncionario(funcionario);
 		reservaExistente.setCliente(cliente);
 		reservaExistente.setAcomodacao(acomodacao);
 		reservaExistente.setStatus(reservaDto.getStatus());
@@ -118,7 +120,7 @@ public class ReservaServiceImpl implements ReservaService {
 	}
 
 	private ResponseEntity<?> validarReservaDto(ReservaDto reservaDto) {
-		
+
 		if (reservaDto.getClienteId() == null || reservaDto.getClienteId() == null
 				|| reservaDto.getAcomodacaoId() == null) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados obrigatórios não fornecidos.");
@@ -143,7 +145,7 @@ public class ReservaServiceImpl implements ReservaService {
 		List<Reserva> reservas = reservaRepository.findAll();
 
 		return reservas.stream().map(reserva -> {
-			Integer responsavelId = reserva.getResponsavel().getId();
+			Integer responsavelId = reserva.getFuncionario().getId();
 			Integer clienteId = reserva.getCliente().getId();
 			Integer acomodacaoId = reserva.getAcomodacao().getId();
 
@@ -157,7 +159,7 @@ public class ReservaServiceImpl implements ReservaService {
 		Reserva reserva = reservaRepository.findById(reservaId)
 				.orElseThrow(() -> new NoSuchElementException("Reserva não encontrada com o ID: " + reservaId));
 
-		Integer responsavelId = reserva.getResponsavel() != null ? reserva.getResponsavel().getId() : null;
+		Integer responsavelId = reserva.getFuncionario() != null ? reserva.getFuncionario().getId() : null;
 		Integer clienteId = reserva.getCliente() != null ? reserva.getCliente().getId() : null;
 		Integer acomodacaoId = reserva.getAcomodacao() != null ? reserva.getAcomodacao().getId() : null;
 

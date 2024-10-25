@@ -2,8 +2,8 @@ package com.senai.api.models;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -15,7 +15,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "usuarios")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Usuario {
 
 	@Id
@@ -28,15 +28,28 @@ public class Usuario {
 	private String email;
 	private boolean habilitado;
 
-    @OneToMany(mappedBy = "responsavel", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private Set<Reserva> responsavel;
+	@OneToMany(mappedBy = "funcionario", cascade = CascadeType.ALL)
+	@JsonIgnore // @JsonManagedReference -> JsonIgnore esconde e o reference apresenta as
+				// reservas
+	private Set<Reserva> reservas;
+
+	@OneToMany(mappedBy = "funcionario", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private Set<Acomodacao> acomodacoes;
+
+	@OneToMany(mappedBy = "funcionario", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private Set<Amenidade> amenidades;
+
+	@OneToMany(mappedBy = "funcionario", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private Set<Cliente> clientes;
 
 	public Usuario() {
 	}
 
 	public Usuario(Integer id, String cpf, String senha, String perfil, String nome, String email, boolean habilitado,
-			Set<Reserva> responsavel) {
+			Set<Reserva> reservas, Set<Acomodacao> acomodacoes, Set<Amenidade> amenidades, Set<Cliente> clientes) {
 		this.id = id;
 		this.cpf = cpf;
 		this.senha = senha;
@@ -44,15 +57,18 @@ public class Usuario {
 		this.nome = nome;
 		this.email = email;
 		this.habilitado = habilitado;
-		this.responsavel = responsavel;
+		this.reservas = reservas;
+		this.acomodacoes = acomodacoes;
+		this.amenidades = amenidades;
+		this.clientes = clientes;
 	}
 
 	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Integer usuario_id) {
-		this.id = usuario_id;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public String getCpf() {
@@ -95,7 +111,7 @@ public class Usuario {
 		this.email = email;
 	}
 
-	public boolean ishabilitado() {
+	public boolean isHabilitado() {
 		return habilitado;
 	}
 
@@ -103,12 +119,36 @@ public class Usuario {
 		this.habilitado = habilitado;
 	}
 
-	public Set<Reserva> getResponsavel() {
-		return responsavel;
+	public Set<Reserva> getReservas() {
+		return reservas;
 	}
 
-	public void setResponsavel(Set<Reserva> responsavel) {
-		this.responsavel = responsavel;
+	public void setReservas(Set<Reserva> reservas) {
+		this.reservas = reservas;
+	}
+
+	public Set<Acomodacao> getAcomodacoes() {
+		return acomodacoes;
+	}
+
+	public void setAcomodacoes(Set<Acomodacao> acomodacoes) {
+		this.acomodacoes = acomodacoes;
+	}
+
+	public Set<Amenidade> getAmenidades() {
+		return amenidades;
+	}
+
+	public void setAmenidades(Set<Amenidade> amenidades) {
+		this.amenidades = amenidades;
+	}
+
+	public Set<Cliente> getClientes() {
+		return clientes;
+	}
+
+	public void setClientes(Set<Cliente> clientes) {
+		this.clientes = clientes;
 	}
 
 }

@@ -1,6 +1,5 @@
 package com.senai.api.dto;
 
-
 public class ClienteDto {
 	private Integer id;
 	private String cpf;
@@ -8,6 +7,7 @@ public class ClienteDto {
 	private String email;
 	private String telefone;
 	private String endereco;
+	private Integer funcionarioId;
 	private Integer reservaId;
 
 	public ClienteDto() {
@@ -59,6 +59,14 @@ public class ClienteDto {
 
 	public void setEndereco(String endereco) {
 		this.endereco = endereco;
+	}
+
+	public Integer getFuncionarioId() {
+		return funcionarioId;
+	}
+
+	public void setFuncionarioId(Integer funcionarioId) {
+		this.funcionarioId = funcionarioId;
 	}
 
 	public Integer getReservaId() {

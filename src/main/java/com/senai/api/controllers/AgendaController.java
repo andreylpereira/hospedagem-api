@@ -19,7 +19,7 @@ public class AgendaController {
 	@Autowired
 	private AgendaService agendaService;
 
-	@GetMapping("/agenda/{acomodacaoId}/{mes}") 
+	@GetMapping("/agenda/{acomodacaoId}/{mes}")
 	public List<AgendaDto> recuperarReservas(@PathVariable LocalDateTime mes, @PathVariable Integer acomodacaoId) {
 		return agendaService.gerarAgenda(mes, acomodacaoId);
 	}

@@ -26,22 +26,27 @@ public class Acomodacao {
 
 	@ManyToMany
 	@JoinTable(name = "acomodacao_amenidade", joinColumns = @JoinColumn(name = "acomodacao_id"), inverseJoinColumns = @JoinColumn(name = "amenidade_id", nullable = false))
-	@JsonIgnore
 	private Set<Amenidade> amenidades;
+
+	@ManyToOne
+	@JoinColumn(name = "funcionario_id")
+	@JsonIgnore
+	private Usuario funcionario;
 
 	public Acomodacao() {
 	}
 
-	public Acomodacao(Integer id, String nome, String descricao, int capacidade, double preco, Set<Reserva> reservas,
-			Set<Amenidade> amenidades, boolean habilitado) {
+	public Acomodacao(Integer id, String nome, String descricao, int capacidade, double preco, boolean habilitado,
+			Set<Reserva> reservas, Set<Amenidade> amenidades, Usuario funcionario) {
 		this.id = id;
 		this.nome = nome;
 		this.descricao = descricao;
 		this.capacidade = capacidade;
 		this.preco = preco;
+		this.habilitado = habilitado;
 		this.reservas = reservas;
 		this.amenidades = amenidades;
-		this.habilitado = habilitado;
+		this.funcionario = funcionario;
 	}
 
 	public Integer getId() {
@@ -84,6 +89,14 @@ public class Acomodacao {
 		this.preco = preco;
 	}
 
+	public boolean isHabilitado() {
+		return habilitado;
+	}
+
+	public void setHabilitado(boolean habilitado) {
+		this.habilitado = habilitado;
+	}
+
 	public Set<Reserva> getReservas() {
 		return reservas;
 	}
@@ -100,13 +113,12 @@ public class Acomodacao {
 		this.amenidades = amenidades;
 	}
 
-	public boolean isHabilitado() {
-		return habilitado;
+	public Usuario getFuncionario() {
+		return funcionario;
 	}
 
-	public void setHabilitado(boolean habilitado) {
-		this.habilitado = habilitado;
+	public void setFuncionario(Usuario funcionario) {
+		this.funcionario = funcionario;
 	}
 
-	
 }

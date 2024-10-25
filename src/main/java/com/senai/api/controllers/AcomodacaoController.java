@@ -26,22 +26,24 @@ public class AcomodacaoController {
 	@Autowired
 	private AcomodacaoRepository acomodacaoRepository;
 
-	@PostMapping("/acomodacoes")
-	public ResponseEntity<?> insertAcomodacao(@RequestBody AcomodacaoDto acomodacaoDto) {
-		return acomodacaoService.cadastrar(acomodacaoDto);
+	@PostMapping("{usuarioId}/acomodacoes")
+	public ResponseEntity<?> insertAcomodacao(@RequestBody AcomodacaoDto acomodacaoDto,
+			@PathVariable Integer usuarioId) {
+		return acomodacaoService.cadastrar(acomodacaoDto, usuarioId);
 	}
-	
-	@PutMapping("/acomodacoes/{acomodacaoId}") 
-	public ResponseEntity<?> updateAcomodacao(@RequestBody AcomodacaoDto acomodacaoDto,@PathVariable Integer acomodacaoId) {
-		return acomodacaoService.editar(acomodacaoDto, acomodacaoId);	
+
+	@PutMapping("{usuarioId}/acomodacoes/{acomodacaoId}")
+	public ResponseEntity<?> updateAcomodacao(@RequestBody AcomodacaoDto acomodacaoDto, @PathVariable Integer usuarioId,
+			@PathVariable Integer acomodacaoId) {
+		return acomodacaoService.editar(acomodacaoDto, usuarioId, acomodacaoId);
 	}
-	
-	@GetMapping("/acomodacoes") 
+
+	@GetMapping("/acomodacoes")
 	public List<Acomodacao> getAcomodacoes() {
-		return acomodacaoRepository.findAll();	
+		return acomodacaoRepository.findAll();
 	}
-	
-	@GetMapping("/acomodacoes/{acomodacaoId}") 
+
+	@GetMapping("/acomodacoes/{acomodacaoId}")
 	public Acomodacao recuperarAmenidades(@PathVariable Integer acomodacaoId) {
 		return acomodacaoRepository.getReferenceById(acomodacaoId);
 	}

@@ -26,22 +26,23 @@ public class ClienteController {
 	@Autowired
 	private ClienteRepository clienteRepository;
 
-	@PostMapping("/clientes")
-	public ResponseEntity<?> insertCliente(@RequestBody ClienteDto clienteDto) {
-		return clienteService.cadastrar(clienteDto);
+	@PostMapping("/{usuarioId}/clientes")
+	public ResponseEntity<?> insertCliente(@RequestBody ClienteDto clienteDto, @PathVariable Integer usuarioId) {
+		return clienteService.cadastrar(clienteDto, usuarioId);
 	}
-	
-	@PutMapping("/clientes/{clienteId}") 
-	public ResponseEntity<?> updateCliente(@RequestBody ClienteDto clienteDto,@PathVariable Integer clienteId) {
-		return clienteService.editar(clienteDto, clienteId);	
+
+	@PutMapping("{usuarioId}/clientes/{clienteId}")
+	public ResponseEntity<?> updateCliente(@RequestBody ClienteDto clienteDto, @PathVariable Integer usuarioId,
+			@PathVariable Integer clienteId) {
+		return clienteService.editar(clienteDto, usuarioId, clienteId);
 	}
-	
-	@GetMapping("/clientes") 
+
+	@GetMapping("/clientes")
 	public List<Cliente> getClientes() {
-		return clienteRepository.findAll();	
+		return clienteRepository.findAll();
 	}
-	
-	@GetMapping("/clientes/{clienteId}") 
+
+	@GetMapping("/clientes/{clienteId}")
 	public Cliente recuperarAmenidades(@PathVariable Integer clienteId) {
 		return clienteRepository.getReferenceById(clienteId);
 	}

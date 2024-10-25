@@ -1,7 +1,6 @@
 package com.senai.api.services.impl;
 
 import java.util.HashSet;
-
 import java.util.Optional;
 import java.util.Set;
 
@@ -14,7 +13,9 @@ import org.springframework.stereotype.Service;
 import com.senai.api.dto.AcomodacaoDto;
 import com.senai.api.models.Acomodacao;
 import com.senai.api.models.Amenidade;
+import com.senai.api.models.Usuario;
 import com.senai.api.repository.AcomodacaoRepository;
+import com.senai.api.repository.UsuarioRepository;
 import com.senai.api.repository.AmenidadeRepository;
 import com.senai.api.services.AcomodacaoService;
 
@@ -25,10 +26,14 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 	private AcomodacaoRepository acomodacaoRepository;
 	@Autowired
 	private AmenidadeRepository amenidadeRepository;
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 
 	@Override
-	public ResponseEntity<?> cadastrar(AcomodacaoDto acomodacaoDto) {
-		if (acomodacaoDto == null || acomodacaoDto.getAmenidades() == null || acomodacaoDto.getAmenidades().isEmpty()) {
+	public ResponseEntity<?> cadastrar(AcomodacaoDto acomodacaoDto, Integer usuarioId) {
+		Boolean isUser = usuarioRepository.findById(usuarioId).isPresent();
+		if (!isUser || acomodacaoDto == null || acomodacaoDto.getAmenidades() == null
+				|| acomodacaoDto.getAmenidades().isEmpty()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados da acomodação não fornecidos.");
 		}
 
@@ -38,21 +43,23 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 					.orElseThrow(() -> new RuntimeException("Amenidade não encontrada com ID: " + amenidade.getId()));
 			amenidades.add(persistedAmenidade);
 		}
-
+		Usuario funcionario = usuarioRepository.getReferenceById(usuarioId);
 		Acomodacao acomodacao = new Acomodacao();
 		BeanUtils.copyProperties(acomodacaoDto, acomodacao);
 		acomodacao.setAmenidades(amenidades);
-
+		acomodacao.setFuncionario(funcionario);
 		acomodacaoRepository.save(acomodacao);
 		return ResponseEntity.status(HttpStatus.CREATED).body("Acomodação adicionada com sucesso.");
 	}
 
 	@Override
-	public ResponseEntity<?> editar(AcomodacaoDto acomodacaoDto, Integer acomodacaoId) {
+	public ResponseEntity<?> editar(AcomodacaoDto acomodacaoDto, Integer usuarioId, Integer acomodacaoId) {
 		Optional<Acomodacao> existsAcomodacaoOptional = acomodacaoRepository.findById(acomodacaoId);
+		Boolean isUser = usuarioRepository.findById(usuarioId).isPresent();
 
-		if (existsAcomodacaoOptional.isPresent()) {
+		if (isUser || existsAcomodacaoOptional.isPresent()) {
 			Acomodacao acomodacao = existsAcomodacaoOptional.get();
+			Usuario funcionario = usuarioRepository.getReferenceById(usuarioId);
 
 			acomodacao.setNome(acomodacaoDto.getNome());
 			acomodacao.setDescricao(acomodacaoDto.getDescricao());
@@ -71,6 +78,7 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 				}
 			}
 			acomodacao.setAmenidades(amenidades);
+			acomodacao.setFuncionario(funcionario);
 			acomodacaoRepository.save(acomodacao);
 			return ResponseEntity.status(HttpStatus.CREATED).body("Acomodação atualizada com sucesso.");
 		} else {
