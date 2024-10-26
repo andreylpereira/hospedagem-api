@@ -1,5 +1,6 @@
 package com.senai.api.controllers;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +39,12 @@ public class UsuarioController {
 	}
 
 	@PostMapping("/cadastrarUsuario")
-	public ResponseEntity<?> insertUsuario(@RequestBody UsuarioDto usuarioDto) {
+	public ResponseEntity<?> insertUsuario(@RequestBody UsuarioDto usuarioDto) throws NoSuchAlgorithmException {
 		return usuarioService.cadastrar(usuarioDto);
 	}
 	
 	@PutMapping("/atualizarUsuario/{usuarioId}")
-	public ResponseEntity<?> editUsuario(@RequestBody UsuarioDto usuarioDto, @PathVariable Integer usuarioId) {
+	public ResponseEntity<?> editUsuario(@RequestBody UsuarioDto usuarioDto, @PathVariable Integer usuarioId) throws NoSuchAlgorithmException {
 		return usuarioService.editar(usuarioDto, usuarioId);
 	}
 	

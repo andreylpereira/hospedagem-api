@@ -34,7 +34,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 		if (!usuario.isHabilitado()) {
 			throw new IllegalStateException("Usuário não está habilitado.");
 		}
-
 		return new User(usuario.getCpf(), usuario.getSenha(), mapRolesToAuthorities(usuario));
 	}
 

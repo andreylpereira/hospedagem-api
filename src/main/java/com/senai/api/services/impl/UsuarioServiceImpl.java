@@ -1,5 +1,6 @@
 package com.senai.api.services.impl;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.InputMismatchException;
 
 import org.springframework.beans.BeanUtils;
@@ -15,6 +16,7 @@ import com.senai.api.dto.UsuarioDto;
 import com.senai.api.models.Usuario;
 import com.senai.api.repository.UsuarioRepository;
 import com.senai.api.services.UsuarioService;
+import com.senai.api.utils.HashUtil;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
@@ -26,17 +28,18 @@ public class UsuarioServiceImpl implements UsuarioService {
 	private PasswordEncoder passwordEncoder;
 
 	@Override
-	public ResponseEntity<?> cadastrar(UsuarioDto usuarioDto) {
+	public ResponseEntity<?> cadastrar(UsuarioDto usuarioDto) throws NoSuchAlgorithmException {
 
 		String cpf = formatCpf(usuarioDto.getCpf());
-		Boolean isAvaible = validCpf(cpf) && usuarioRepository.findByCpf(cpf).isEmpty();
+		String cpfCriptografado = HashUtil.hashCpf(cpf);
+		Boolean isAvaible = validCpf(cpf) && usuarioRepository.findByCpf(cpfCriptografado).isEmpty();
 
 		if (isAvaible && usuarioDto != null) {
 			Usuario usuario = new Usuario();
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.getSenha());
 			BeanUtils.copyProperties(usuarioDto, usuario);
 
-			usuario.setCpf(cpf);
+			usuario.setCpf(cpfCriptografado);
 			usuario.setSenha(senhaCriptografada);
 
 			usuarioRepository.save(usuario);
@@ -48,16 +51,18 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
 	@Override
-	public ResponseEntity<?> editar(UsuarioDto usuarioDto, Integer usuarioId) {
+	public ResponseEntity<?> editar(UsuarioDto usuarioDto, Integer usuarioId) throws NoSuchAlgorithmException {
 
 		boolean isExists = usuarioRepository.existsById(usuarioId);
 
 		if (isExists) {
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.getSenha());
+			String cpf = formatCpf(usuarioDto.getCpf());
+			String cpfCriptografado = HashUtil.hashCpf(cpf);
 			Usuario usuario = new Usuario();
 
 			BeanUtils.copyProperties(usuarioDto, usuario);
-			usuario.setCpf(formatCpf(usuarioDto.getCpf()));
+			usuario.setCpf(cpfCriptografado);
 			usuario.setSenha(senhaCriptografada);
 			usuario.setId(usuarioId);
 			usuarioRepository.save(usuario);
@@ -81,6 +86,13 @@ public class UsuarioServiceImpl implements UsuarioService {
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + usuarioId + " não encontrado.");
 	}
+	
+	@Override
+	public Boolean verificarCpfExistente(String cpf) throws Exception {
+	    String cpfHash = HashUtil.hashCpf(cpf);
+	    return usuarioRepository.findByCpf(cpfHash).isPresent();
+	}
+
 
 	public Boolean isCpf(String CPF) {
 

@@ -1,6 +1,9 @@
 package com.senai.api.controllers;
 
 import jakarta.validation.Valid;
+
+import java.security.NoSuchAlgorithmException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,7 @@ import com.senai.api.models.Usuario;
 import com.senai.api.repository.UsuarioRepository;
 import com.senai.api.security.JWTGenerator;
 import com.senai.api.services.UsuarioService;
+import com.senai.api.utils.HashUtil;
 
 @RestController
 @RequestMapping("/")
@@ -43,9 +47,12 @@ public class AuthController {
 	}
 
 	@PostMapping("/api/auth/login")
-	public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid Usuario usuario) {
+	public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid Usuario usuario) throws NoSuchAlgorithmException {
+		
+		String cpf = usuarioService.formatCpf(usuario.getCpf());
+		String cpfCriptografado = HashUtil.hashCpf(cpf);
 		Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-				usuarioService.formatCpf(usuario.getCpf()), usuario.getSenha()));
+				cpfCriptografado, usuario.getSenha()));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String token = jwtGenerator.generateToken(authentication);
 
