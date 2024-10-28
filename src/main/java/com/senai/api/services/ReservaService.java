@@ -18,4 +18,6 @@ public interface ReservaService {
 
 	ReservaDto reservaById(Integer reservaId);
 
+	ResponseEntity<?> editarStatus(Integer reservaId, String status);
+
 }

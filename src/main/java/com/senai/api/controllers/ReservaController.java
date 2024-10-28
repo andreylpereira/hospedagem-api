@@ -21,26 +21,29 @@ public class ReservaController {
 
 	@Autowired
 	private ReservaService reservaService;
-	
 
 	@PostMapping("/reservas")
 	public ResponseEntity<?> insertReserva(@RequestBody ReservaDto reservaDto) {
 		return reservaService.cadastrar(reservaDto);
 	}
-	
-	@PutMapping("/reservas/{reservaId}") 
-	public ResponseEntity<?> updateReserva(@RequestBody ReservaDto reservaDto,@PathVariable Integer reservaId) {
-		return reservaService.editar(reservaDto, reservaId);	
+
+	@PutMapping("/reservas/{reservaId}")
+	public ResponseEntity<?> updateReserva(@RequestBody ReservaDto reservaDto, @PathVariable Integer reservaId) {
+		return reservaService.editar(reservaDto, reservaId);
 	}
-	
-	@GetMapping("/reservas") 
+
+	@GetMapping("/reservas")
 	public List<ReservaDto> getReservas() {
-		return reservaService.listarReservas();	
+		return reservaService.listarReservas();
 	}
-	
-	@GetMapping("/reservas/{reservaId}") 
+
+	@GetMapping("/reservas/{reservaId}")
 	public ReservaDto recuperarReservas(@PathVariable Integer reservaId) {
 		return reservaService.reservaById(reservaId);
 	}
-	
+
+	@PutMapping("/reservas/{reservaId}/{status}")
+	public ResponseEntity<?> updateStatus(@PathVariable Integer reservaId, @PathVariable String status) {
+		return reservaService.editarStatus(reservaId, status);
+	}
 }

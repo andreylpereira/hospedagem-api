@@ -48,4 +48,9 @@ public class AcomodacaoController {
 		return acomodacaoRepository.getReferenceById(acomodacaoId);
 	}
 
+	@PutMapping("/acomodacoes/{acomodacaoId}/{habilitado}")
+	public ResponseEntity<?> updateHabilitado(@PathVariable Integer acomodacaoId, @PathVariable boolean habilitado) {
+		return acomodacaoService.habilitadoDesabilitado(acomodacaoId, habilitado);
+	}
+
 }

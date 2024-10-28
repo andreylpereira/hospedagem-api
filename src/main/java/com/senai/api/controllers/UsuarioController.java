@@ -26,13 +26,12 @@ public class UsuarioController {
 	private UsuarioService usuarioService;
 	@Autowired
 	private UsuarioRepository usuarioRepository;
-	
-	
+
 	@GetMapping("/lista")
 	public List<Usuario> getUsuarios() {
 		return usuarioRepository.findAll();
 	}
-	
+
 	@GetMapping("/lista/{usuarioId}")
 	public Usuario getUsuario(@PathVariable Integer usuarioId) {
 		return usuarioRepository.getReferenceById(usuarioId);
@@ -42,15 +41,21 @@ public class UsuarioController {
 	public ResponseEntity<?> insertUsuario(@RequestBody UsuarioDto usuarioDto) throws NoSuchAlgorithmException {
 		return usuarioService.cadastrar(usuarioDto);
 	}
-	
+
 	@PutMapping("/atualizarUsuario/{usuarioId}")
-	public ResponseEntity<?> editUsuario(@RequestBody UsuarioDto usuarioDto, @PathVariable Integer usuarioId) throws NoSuchAlgorithmException {
+	public ResponseEntity<?> editUsuario(@RequestBody UsuarioDto usuarioDto, @PathVariable Integer usuarioId)
+			throws NoSuchAlgorithmException {
 		return usuarioService.editar(usuarioDto, usuarioId);
 	}
-	
+
 	@PutMapping("/atualizarSenha/{usuarioId}")
 	public ResponseEntity<?> resetUsuario(@RequestBody UsuarioDto usuarioDto, @PathVariable Integer usuarioId) {
 		return usuarioService.editarSenha(usuarioDto, usuarioId);
+	}
+
+	@PutMapping("/lista/{usuarioId}/{habilitado}")
+	public ResponseEntity<?> updateHabilitado(@PathVariable Integer usuarioId, @PathVariable boolean habilitado) {
+		return usuarioService.editarPermissao(usuarioId, habilitado);
 	}
 
 }

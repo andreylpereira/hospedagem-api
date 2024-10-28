@@ -82,17 +82,28 @@ public class UsuarioServiceImpl implements UsuarioService {
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.getSenha());
 			usuario.setSenha(senhaCriptografada);
 			usuarioRepository.save(usuario);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Senha atualizadaa com sucesso.");
+			return ResponseEntity.status(HttpStatus.CREATED).body("Permissão atualizada com sucesso.");
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + usuarioId + " não encontrado.");
 	}
-	
+
 	@Override
 	public Boolean verificarCpfExistente(String cpf) throws Exception {
-	    String cpfHash = HashUtil.hashCpf(cpf);
-	    return usuarioRepository.findByCpf(cpfHash).isPresent();
+		String cpfHash = HashUtil.hashCpf(cpf);
+		return usuarioRepository.findByCpf(cpfHash).isPresent();
 	}
 
+	@Override
+	public ResponseEntity<?> editarPermissao(Integer usuarioId, boolean habilitado) {
+		Usuario usuario = usuarioRepository.getReferenceById(usuarioId);
+
+		if (usuario.getId() == usuarioId) {
+			usuario.setHabilitado(habilitado);
+			usuarioRepository.save(usuario);
+			return ResponseEntity.status(HttpStatus.CREATED).body("Senha atualizada com sucesso.");
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + usuarioId + " não encontrado.");
+	}
 
 	public Boolean isCpf(String CPF) {
 

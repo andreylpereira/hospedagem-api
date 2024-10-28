@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.senai.api.dto.ReservaDto;
+import com.senai.api.enums.Status;
 import com.senai.api.models.Acomodacao;
 import com.senai.api.models.Cliente;
 import com.senai.api.models.Reserva;
@@ -152,6 +153,41 @@ public class ReservaServiceImpl implements ReservaService {
 			return new ReservaDto(reserva.getId(), responsavelId, clienteId, acomodacaoId, reserva.getDataInicio(),
 					reserva.getDataFim(), reserva.getStatus());
 		}).collect(Collectors.toList());
+	}
+
+	@Override
+	public ResponseEntity<?> editarStatus(Integer reservaId, String status) {
+		Reserva reserva = reservaRepository.getReferenceById(reservaId);
+
+		if (reserva.getId() == reservaId) {
+
+			switch (status) {
+			case "Em andamento": {
+				reserva.setStatus(Status.EM_ANDAMENTO);
+				reservaRepository.save(reserva);
+				return ResponseEntity.status(HttpStatus.CREATED).body("Status da reserva atualizado com sucesso.");
+			}
+			case "Confirmado": {
+				reserva.setStatus(Status.CONFIRMADO);
+				reservaRepository.save(reserva);
+				return ResponseEntity.status(HttpStatus.CREATED).body("Status da reserva atualizado com sucesso.");
+			}
+			case "Cancelado": {
+				reserva.setStatus(Status.CANCELADO);
+				reservaRepository.save(reserva);
+				return ResponseEntity.status(HttpStatus.CREATED).body("Status da reserva atualizado com sucesso.");
+			}
+			case "Pendente": {
+				reserva.setStatus(Status.PENDENTE);
+				reservaRepository.save(reserva);
+				return ResponseEntity.status(HttpStatus.CREATED).body("Status da reserva atualizado com sucesso.");
+			}
+			default:
+				throw new IllegalArgumentException("Unexpected value: " + status);
+			}
+
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + status + " não encontrado.");
 	}
 
 	public ReservaDto reservaById(Integer reservaId) {

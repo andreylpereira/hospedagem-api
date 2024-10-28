@@ -87,4 +87,15 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 		}
 	}
 
+	@Override
+	public ResponseEntity<?> habilitadoDesabilitado(Integer acomodacaoId, boolean habilitado) {
+		Acomodacao acomodacao = acomodacaoRepository.getReferenceById(acomodacaoId);
+
+		if (acomodacao.getId() == acomodacaoId) {
+			acomodacao.setHabilitado(habilitado);
+			acomodacaoRepository.save(acomodacao);
+			return ResponseEntity.status(HttpStatus.CREATED).body("Estado da acomodação atualizado com sucesso.");
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + acomodacaoId + " não encontrado.");
+	}
 }

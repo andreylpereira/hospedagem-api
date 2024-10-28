@@ -23,5 +23,7 @@ public interface UsuarioService {
 	ResponseEntity<?> editar(UsuarioDto usuarioDto, Integer usuarioId) throws NoSuchAlgorithmException;
 
 	ResponseEntity<?> editarSenha(UsuarioDto usuarioDto, Integer usuarioId);
+	
+	ResponseEntity<?> editarPermissao(Integer usuarioId, boolean habilitado);
 
 }
