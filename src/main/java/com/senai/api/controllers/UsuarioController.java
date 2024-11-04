@@ -22,19 +22,23 @@ import com.senai.api.services.UsuarioService;
 @RequestMapping("/api/usuario")
 public class UsuarioController {
 
-	@Autowired
 	private UsuarioService usuarioService;
-	@Autowired
 	private UsuarioRepository usuarioRepository;
 
+	@Autowired
+	public UsuarioController(UsuarioService usuarioService, UsuarioRepository usuarioRepository) {
+		this.usuarioService = usuarioService;
+		this.usuarioRepository = usuarioRepository;
+	}
+
 	@GetMapping("/lista")
-	public List<Usuario> getUsuarios() {
-		return usuarioRepository.findAll();
+	public ResponseEntity<?> findUsuarios() {
+		return usuarioService.recuperarUsuarios();
 	}
 
 	@GetMapping("/lista/{usuarioId}")
-	public Usuario getUsuario(@PathVariable Integer usuarioId) {
-		return usuarioRepository.getReferenceById(usuarioId);
+	public ResponseEntity<?> findUsuario(@PathVariable Integer usuarioId) {
+		return usuarioService.recuperarUsuario(usuarioId);
 	}
 
 	@PostMapping("/cadastrarUsuario")

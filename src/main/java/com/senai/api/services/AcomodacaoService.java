@@ -13,4 +13,9 @@ public interface AcomodacaoService {
 	ResponseEntity<?> cadastrar(AcomodacaoDto acomodacaoDto, Integer usuarioId);
 
 	ResponseEntity<?> habilitadoDesabilitado(Integer acomodacaoId, boolean habilitado);
+
+	ResponseEntity<?> recuperarAcomodacao(Integer acomodacaoId);
+
+	ResponseEntity<?> recuperarAcomodacoes();
+
 }

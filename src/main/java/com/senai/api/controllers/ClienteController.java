@@ -1,7 +1,5 @@
 package com.senai.api.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.senai.api.dto.ClienteDto;
-import com.senai.api.models.Cliente;
 import com.senai.api.repository.ClienteRepository;
 import com.senai.api.services.ClienteService;
 
@@ -21,10 +18,14 @@ import com.senai.api.services.ClienteService;
 @RequestMapping("/api/hospedagem")
 public class ClienteController {
 
-	@Autowired
 	private ClienteService clienteService;
-	@Autowired
 	private ClienteRepository clienteRepository;
+
+	@Autowired
+	public ClienteController(ClienteService clienteService, ClienteRepository clienteRepository) {
+		this.clienteService = clienteService;
+		this.clienteRepository = clienteRepository;
+	}
 
 	@PostMapping("/{usuarioId}/clientes")
 	public ResponseEntity<?> insertCliente(@RequestBody ClienteDto clienteDto, @PathVariable Integer usuarioId) {
@@ -38,13 +39,13 @@ public class ClienteController {
 	}
 
 	@GetMapping("/clientes")
-	public List<Cliente> getClientes() {
-		return clienteRepository.findAll();
+	public ResponseEntity<?> findClientes() {
+		return clienteService.recuperarClientes();
 	}
 
 	@GetMapping("/clientes/{clienteId}")
-	public Cliente recuperarAmenidades(@PathVariable Integer clienteId) {
-		return clienteRepository.getReferenceById(clienteId);
+	public ResponseEntity<?> findCliente(@PathVariable Integer clienteId) {
+		return clienteService.recuperarCliente(clienteId);
 	}
 
 }

@@ -1,7 +1,5 @@
 package com.senai.api.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.senai.api.dto.AmenidadeDto;
-import com.senai.api.models.Amenidade;
 import com.senai.api.repository.AmenidadeRepository;
 import com.senai.api.services.AmenidadeService;
 
@@ -21,11 +18,14 @@ import com.senai.api.services.AmenidadeService;
 @RequestMapping("/api/hospedagem")
 public class AmenidadeController {
 
-	@Autowired
 	private AmenidadeService amenidadeService;
+	private AmenidadeRepository amenidadeRepository;
 
 	@Autowired
-	private AmenidadeRepository amenidadeRepository;
+	public AmenidadeController(AmenidadeService amenidadeService, AmenidadeRepository amenidadeRepository) {
+		this.amenidadeService = amenidadeService;
+		this.amenidadeRepository = amenidadeRepository;
+	}
 
 	@PostMapping("{usuarioId}/amenidades")
 	public ResponseEntity<?> insertAmenidade(@RequestBody AmenidadeDto amenidadeDto, @PathVariable Integer usuarioId) {
@@ -39,13 +39,13 @@ public class AmenidadeController {
 	}
 
 	@GetMapping("/amenidades")
-	public List<Amenidade> getAmenidades() {
-		return amenidadeRepository.findAll();
+	public ResponseEntity<?> findAmenidades() {
+		return amenidadeService.recuperarAmenidades();
 	}
 
 	@GetMapping("/amenidades/{amenidadeId}")
-	public Amenidade recuperarAmenidades(@PathVariable Integer amenidadeId) {
-		return amenidadeRepository.getReferenceById(amenidadeId);
+	public ResponseEntity<?> findAmenidade(@PathVariable Integer amenidadeId) {
+		return amenidadeService.recuperarAmenidade(amenidadeId);
 	}
 
 }

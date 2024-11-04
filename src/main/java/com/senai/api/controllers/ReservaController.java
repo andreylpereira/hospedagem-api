@@ -33,12 +33,12 @@ public class ReservaController {
 	}
 
 	@GetMapping("/reservas")
-	public List<ReservaDto> getReservas() {
+	public List<ReservaDto> findReservas() {
 		return reservaService.listarReservas();
 	}
 
 	@GetMapping("/reservas/{reservaId}")
-	public ReservaDto recuperarReservas(@PathVariable Integer reservaId) {
+	public ReservaDto findReserva(@PathVariable Integer reservaId) {
 		return reservaService.reservaById(reservaId);
 	}
 

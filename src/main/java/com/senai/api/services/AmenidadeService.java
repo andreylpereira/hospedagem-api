@@ -12,4 +12,8 @@ public interface AmenidadeService {
 
 	ResponseEntity<?> editar(AmenidadeDto amenidadeDto, Integer usuarioId, Integer amenidadeId);
 
+	ResponseEntity<?> recuperarAmenidades();
+
+	ResponseEntity<?> recuperarAmenidade(Integer amenidadeId);
+
 }

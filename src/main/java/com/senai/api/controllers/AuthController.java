@@ -29,9 +29,7 @@ import com.senai.api.utils.HashUtil;
 public class AuthController {
 
 	private AuthenticationManager authenticationManager;
-	@SuppressWarnings("unused")
 	private UsuarioRepository usuarioRepository;
-	@SuppressWarnings("unused")
 	private PasswordEncoder passwordEncoder;
 	private JWTGenerator jwtGenerator;
 	private UsuarioService usuarioService;
@@ -48,11 +46,11 @@ public class AuthController {
 
 	@PostMapping("/api/auth/login")
 	public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid Usuario usuario) throws NoSuchAlgorithmException {
-		
+
 		String cpf = usuarioService.formatCpf(usuario.getCpf());
 		String cpfCriptografado = HashUtil.hashCpf(cpf);
-		Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-				cpfCriptografado, usuario.getSenha()));
+		Authentication authentication = authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken(cpfCriptografado, usuario.getSenha()));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String token = jwtGenerator.generateToken(authentication);
 

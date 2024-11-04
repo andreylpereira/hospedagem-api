@@ -12,4 +12,8 @@ public interface ClienteService {
 
 	ResponseEntity<?> editar(ClienteDto clienteDto, Integer usuarioId, Integer clienteId);
 
+	ResponseEntity<?> recuperarClientes();
+
+	ResponseEntity<?> recuperarCliente(Integer clienteId);
+
 }

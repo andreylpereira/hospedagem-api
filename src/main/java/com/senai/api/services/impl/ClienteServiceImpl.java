@@ -1,5 +1,7 @@
 package com.senai.api.services.impl;
 
+import java.util.List;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,12 +18,17 @@ import com.senai.api.services.UsuarioService;
 @Service
 public class ClienteServiceImpl implements ClienteService {
 
-	@Autowired
 	private ClienteRepository clienteRepository;
-	@Autowired
 	private UsuarioService usuarioService;
-	@Autowired
 	private UsuarioRepository usuarioRepository;
+
+	@Autowired
+	public ClienteServiceImpl(ClienteRepository clienteRepository, UsuarioService usuarioService,
+			UsuarioRepository usuarioRepository) {
+		this.clienteRepository = clienteRepository;
+		this.usuarioService = usuarioService;
+		this.usuarioRepository = usuarioRepository;
+	}
 
 	@Override
 	public ResponseEntity<?> cadastrar(ClienteDto clienteDto, Integer usuarioId) {
@@ -69,6 +76,26 @@ public class ClienteServiceImpl implements ClienteService {
 		clienteRepository.save(cliente);
 		return ResponseEntity.status(HttpStatus.CREATED).body("Cliente atualizado no banco de dados.");
 
+	}
+
+	@Override
+	public ResponseEntity<?> recuperarClientes() {
+		try {
+			List<Cliente> clientes = clienteRepository.findAll();
+			return ResponseEntity.status(HttpStatus.OK).body(clientes);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+		}
+	}
+
+	@Override
+	public ResponseEntity<?> recuperarCliente(Integer clienteId) {
+		try {
+			Cliente cliente = clienteRepository.getReferenceById(clienteId);
+			return ResponseEntity.status(HttpStatus.OK).body(cliente);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+		}
 	}
 
 }

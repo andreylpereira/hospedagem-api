@@ -2,6 +2,7 @@ package com.senai.api.services.impl;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.InputMismatchException;
+import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.senai.api.dto.UsuarioDto;
-
 import com.senai.api.models.Usuario;
 import com.senai.api.repository.UsuarioRepository;
 import com.senai.api.services.UsuarioService;
@@ -21,11 +21,14 @@ import com.senai.api.utils.HashUtil;
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 
-	@Autowired
 	private UsuarioRepository usuarioRepository;
-	@SuppressWarnings("unused")
-	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	public UsuarioServiceImpl(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+		this.usuarioRepository = usuarioRepository;
+		this.passwordEncoder = passwordEncoder;
+	}
 
 	@Override
 	public ResponseEntity<?> cadastrar(UsuarioDto usuarioDto) throws NoSuchAlgorithmException {
@@ -82,7 +85,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.getSenha());
 			usuario.setSenha(senhaCriptografada);
 			usuarioRepository.save(usuario);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Permissão atualizada com sucesso.");
+			return ResponseEntity.status(HttpStatus.CREATED).body("Senha atualizada com sucesso.");
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + usuarioId + " não encontrado.");
 	}
@@ -176,4 +179,23 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return valid;
 	}
 
+	@Override
+	public ResponseEntity<?> recuperarUsuarios() {
+		try {
+			List<Usuario> usuarios = usuarioRepository.findAll();
+			return ResponseEntity.status(HttpStatus.OK).body(usuarios);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+		}
+	}
+
+	@Override
+	public ResponseEntity<?> recuperarUsuario(Integer usuarioId) {
+		try {
+			Usuario usuario = usuarioRepository.getReferenceById(usuarioId);
+			return ResponseEntity.status(HttpStatus.OK).body(usuario);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+		}
+	}
 }

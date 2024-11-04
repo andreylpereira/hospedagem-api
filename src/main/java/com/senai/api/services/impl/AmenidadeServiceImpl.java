@@ -1,5 +1,7 @@
 package com.senai.api.services.impl;
 
+import java.util.List;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,6 +54,26 @@ public class AmenidadeServiceImpl implements AmenidadeService {
 			return ResponseEntity.status(HttpStatus.CREATED).body("Amenidade atualizada com sucesso");
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Amenidade com ID " + amenidadeId + " não encontrada.");
+	}
+
+	@Override
+	public ResponseEntity<?> recuperarAmenidades() {
+		try {
+			List<Amenidade> amenidades = amenidadeRepository.findAll();
+			return ResponseEntity.status(HttpStatus.OK).body(amenidades);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+		}
+	}
+
+	@Override
+	public ResponseEntity<?> recuperarAmenidade(Integer amenidadeId) {
+		try {
+			Amenidade amenidade = amenidadeRepository.getReferenceById(amenidadeId);
+			return ResponseEntity.status(HttpStatus.OK).body(amenidade);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+		}
 	}
 
 }

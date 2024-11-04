@@ -38,7 +38,6 @@ public class ReservaServiceImpl implements ReservaService {
 		this.reservaRepository = reservaRepository;
 	}
 
-	@SuppressWarnings("unused")
 	@Override
 	public ResponseEntity<?> cadastrar(ReservaDto reservaDto) {
 
@@ -76,7 +75,6 @@ public class ReservaServiceImpl implements ReservaService {
 		return ResponseEntity.status(HttpStatus.CREATED).body("Reserva efetuada com sucesso.");
 	}
 
-	@SuppressWarnings("unused")
 	@Override
 	public ResponseEntity<?> editar(ReservaDto reservaDto, Integer reservaId) {
 

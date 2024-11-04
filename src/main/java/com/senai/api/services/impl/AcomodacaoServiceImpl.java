@@ -1,6 +1,7 @@
 package com.senai.api.services.impl;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,12 +23,18 @@ import com.senai.api.services.AcomodacaoService;
 @Service
 public class AcomodacaoServiceImpl implements AcomodacaoService {
 
-	@Autowired
+	
 	private AcomodacaoRepository acomodacaoRepository;
-	@Autowired
 	private AmenidadeRepository amenidadeRepository;
-	@Autowired
 	private UsuarioRepository usuarioRepository;
+	
+	@Autowired
+	public AcomodacaoServiceImpl(AcomodacaoRepository acomodacaoRepository, AmenidadeRepository amenidadeRepository,
+			UsuarioRepository usuarioRepository) {
+		this.acomodacaoRepository = acomodacaoRepository;
+		this.amenidadeRepository = amenidadeRepository;
+		this.usuarioRepository = usuarioRepository;
+	}
 
 	@Override
 	public ResponseEntity<?> cadastrar(AcomodacaoDto acomodacaoDto, Integer usuarioId) {
@@ -97,5 +104,25 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 			return ResponseEntity.status(HttpStatus.CREATED).body("Estado da acomodação atualizado com sucesso.");
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + acomodacaoId + " não encontrado.");
+	}
+
+	@Override
+	public ResponseEntity<?> recuperarAcomodacao(Integer acomodacaoId) {
+		try {
+			Acomodacao acomodacao = acomodacaoRepository.getReferenceById(acomodacaoId);
+			return ResponseEntity.status(HttpStatus.OK).body(acomodacao);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+		}
+	}
+
+	@Override
+	public ResponseEntity<?> recuperarAcomodacoes() {
+		try {
+			List<Acomodacao> acomodacoes = acomodacaoRepository.findAll();
+			return ResponseEntity.status(HttpStatus.OK).body(acomodacoes);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+		}
 	}
 }

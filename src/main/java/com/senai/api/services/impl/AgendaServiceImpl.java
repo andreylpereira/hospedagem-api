@@ -19,10 +19,8 @@ import com.senai.api.services.ReservaService;
 @Service
 public class AgendaServiceImpl implements AgendaService {
 
-	@SuppressWarnings("unused")
 	private ClienteRepository clienteRepository;
 	private ReservaService reservaService;
-	@SuppressWarnings("unused")
 	private AcomodacaoRepository acomodacaoRepository;
 
 	public AgendaServiceImpl(ClienteRepository clienteRepository, AcomodacaoRepository acomodacaoRepository,
@@ -84,7 +82,6 @@ public class AgendaServiceImpl implements AgendaService {
 			LocalDateTime dataCompleta = data.atStartOfDay();
 			agenda.add(new AgendaDto(dataCompleta, ocupado, reservaId));
 		}
-
 		return agenda;
 	}
 

@@ -17,13 +17,17 @@ public interface UsuarioService {
 	Boolean isCpf(String cpf);
 
 	Boolean validCpf(String cpf);
-	
+
 	Boolean verificarCpfExistente(String cpf) throws Exception;
 
 	ResponseEntity<?> editar(UsuarioDto usuarioDto, Integer usuarioId) throws NoSuchAlgorithmException;
 
 	ResponseEntity<?> editarSenha(UsuarioDto usuarioDto, Integer usuarioId);
-	
+
 	ResponseEntity<?> editarPermissao(Integer usuarioId, boolean habilitado);
+
+	ResponseEntity<?> recuperarUsuarios();
+
+	ResponseEntity<?> recuperarUsuario(Integer usuarioId);
 
 }

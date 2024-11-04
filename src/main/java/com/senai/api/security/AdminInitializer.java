@@ -33,7 +33,7 @@ public class AdminInitializer implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		String cpfCriptografado = HashUtil.hashCpf(cpf);
-		
+
 		if (!usuarioService.verificarCpfExistente(cpf)) {
 			Usuario admin = new Usuario();
 			admin.setCpf(cpfCriptografado);
