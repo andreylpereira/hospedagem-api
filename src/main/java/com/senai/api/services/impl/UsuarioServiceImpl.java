@@ -183,16 +183,25 @@ public class UsuarioServiceImpl implements UsuarioService {
 	public ResponseEntity<?> recuperarUsuarios() {
 		try {
 			List<Usuario> usuarios = usuarioRepository.findAll();
+			//Simplificando os dados de apresentação
+			usuarios.forEach(a -> {
+				a.setCpf(null);
+				a.setSenha(null);
+			});
 			return ResponseEntity.status(HttpStatus.OK).body(usuarios);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
 		}
 	}
 
+	
 	@Override
 	public ResponseEntity<?> recuperarUsuario(Integer usuarioId) {
 		try {
 			Usuario usuario = usuarioRepository.getReferenceById(usuarioId);
+			//Simplificando os dados de apresentação
+			usuario.setCpf(null);
+			usuario.setSenha(null);
 			return ResponseEntity.status(HttpStatus.OK).body(usuario);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");

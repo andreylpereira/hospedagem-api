@@ -41,12 +41,12 @@ public class UsuarioController {
 		return usuarioService.recuperarUsuario(usuarioId);
 	}
 
-	@PostMapping("/cadastrarUsuario")
+	@PostMapping("/cadastrar")
 	public ResponseEntity<?> insertUsuario(@RequestBody UsuarioDto usuarioDto) throws NoSuchAlgorithmException {
 		return usuarioService.cadastrar(usuarioDto);
 	}
 
-	@PutMapping("/atualizarUsuario/{usuarioId}")
+	@PutMapping("/atualizar/{usuarioId}")
 	public ResponseEntity<?> editUsuario(@RequestBody UsuarioDto usuarioDto, @PathVariable Integer usuarioId)
 			throws NoSuchAlgorithmException {
 		return usuarioService.editar(usuarioDto, usuarioId);
