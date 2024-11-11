@@ -110,7 +110,7 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 	public ResponseEntity<?> recuperarAcomodacao(Integer acomodacaoId) {
 		try {
 			Acomodacao acomodacao = acomodacaoRepository.getReferenceById(acomodacaoId);
-			//Simplificando os dados de apresentação
+	
 			acomodacao.setReservas(null);
 			return ResponseEntity.status(HttpStatus.OK).body(acomodacao);
 		} catch (Exception e) {
@@ -122,9 +122,7 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 	public ResponseEntity<?> recuperarAcomodacoes() {
 		try {
 			List<Acomodacao> acomodacoes = acomodacaoRepository.findAll();
-			acomodacoes.forEach( a -> {
-				a.setReservas(null);
-			});
+	
 			return ResponseEntity.status(HttpStatus.OK).body(acomodacoes);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");

@@ -2,7 +2,7 @@ package com.senai.api.services.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
@@ -42,12 +42,13 @@ public class ReservaServiceImpl implements ReservaService {
 	public ResponseEntity<?> cadastrar(ReservaDto reservaDto) {
 
 		ResponseEntity<?> validarReserva = validarReservaDto(reservaDto);
-		Boolean isAvailable = verificarDisponibilidade(reservaDto.getAcomodacaoId(), reservaDto.getDataInicio(),
-				reservaDto.getDataFim());
-
 		if (validarReserva != null) {
 			return validarReserva;
-		} else if (!isAvailable) {
+		}
+
+		Boolean isAvailable = verificarDisponibilidade(reservaDto.getAcomodacaoId(), reservaDto.getDataInicio(),
+				reservaDto.getDataFim());
+		if (!isAvailable) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O período solicitado de reserva está ocupado.");
 		}
 
@@ -70,58 +71,85 @@ public class ReservaServiceImpl implements ReservaService {
 		reserva.setFuncionario(funcionario);
 		reserva.setCliente(cliente);
 		reserva.setAcomodacao(acomodacao);
-
 		reservaRepository.save(reserva);
+
 		return ResponseEntity.status(HttpStatus.CREATED).body("Reserva efetuada com sucesso.");
 	}
 
 	@Override
 	public ResponseEntity<?> editar(ReservaDto reservaDto, Integer reservaId) {
-
-		Reserva reservaExistente = reservaRepository.findById(reservaId).orElse(null);
-		if (reservaExistente == null) {
+		Optional<Reserva> reservaExistenteOpt = reservaRepository.findById(reservaId);
+		if (reservaExistenteOpt.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reserva de ID " + reservaId + " não encontrada.");
 		}
 
-		ResponseEntity<?> validarReserva = validarReservaDto(reservaDto);
-		Boolean isAvailable = verificarDisponibilidade(reservaDto.getAcomodacaoId(), reservaDto.getDataInicio(),
-				reservaDto.getDataFim());
+		Reserva reservaExistente = reservaExistenteOpt.get();
 
+		ResponseEntity<?> validarReserva = validarReservaDto(reservaDto);
 		if (validarReserva != null) {
 			return validarReserva;
-		} else if (isAvailable && (reservaExistente.getAcomodacao().getId() == reservaDto.getAcomodacaoId())) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O período solicitado de reserva está ocupado.");
-		} else if (!isAvailable && (reservaExistente.getStatus() == reservaDto.getStatus())) {
+		}
+
+		boolean isAlterado = false;
+
+		if (!reservaExistente.getStatus().equals(reservaDto.getStatus())) {
+			isAlterado = true;
+			reservaExistente.setStatus(reservaDto.getStatus());
+		}
+
+		if (!reservaExistente.getDataInicio().equals(reservaDto.getDataInicio())
+				|| !reservaExistente.getDataFim().equals(reservaDto.getDataFim())) {
+
+			Boolean isAvailable = verificarDisponibilidade(reservaDto.getAcomodacaoId(), reservaDto.getDataInicio(),
+					reservaDto.getDataFim());
+			if (!isAvailable) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body("O período solicitado de reserva está ocupado.");
+			}
+
+			isAlterado = true;
+			reservaExistente.setDataInicio(reservaDto.getDataInicio());
+			reservaExistente.setDataFim(reservaDto.getDataFim());
+		}
+
+		if (!reservaExistente.getCliente().getId().equals(reservaDto.getClienteId())) {
+			isAlterado = true;
+			Cliente cliente = fetchCliente(reservaDto.getClienteId());
+			if (cliente == null) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado.");
+			}
+			reservaExistente.setCliente(cliente);
+		}
+
+		if (!reservaExistente.getAcomodacao().getId().equals(reservaDto.getAcomodacaoId())) {
+			isAlterado = true;
+			Acomodacao acomodacao = fetchAcomodacao(reservaDto.getAcomodacaoId());
+			if (acomodacao == null) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Acomodação não encontrada.");
+			}
+			reservaExistente.setAcomodacao(acomodacao);
+		}
+
+		if (!reservaExistente.getFuncionario().getId().equals(reservaDto.getFuncionarioId())) {
+			isAlterado = true;
+			Usuario funcionario = fetchUsuario(reservaDto.getFuncionarioId());
+			if (funcionario == null) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário criador não encontrado.");
+			}
+			reservaExistente.setFuncionario(funcionario);
+		}
+
+		if (!isAlterado) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nenhum dado possível foi alterado.");
 		}
 
-		Usuario funcionario = fetchUsuario(reservaDto.getFuncionarioId());
-		Cliente cliente = fetchCliente(reservaDto.getClienteId());
-		Acomodacao acomodacao = fetchAcomodacao(reservaDto.getAcomodacaoId());
-
-		if (funcionario == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário criador não encontrado.");
-		}
-		if (cliente == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado.");
-		}
-		if (acomodacao == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Acomodação não encontrada.");
-		}
-
-		reservaExistente.setFuncionario(funcionario);
-		reservaExistente.setCliente(cliente);
-		reservaExistente.setAcomodacao(acomodacao);
-		reservaExistente.setStatus(reservaDto.getStatus());
-
 		reservaRepository.save(reservaExistente);
+
 		return ResponseEntity.status(HttpStatus.OK).body("Reserva atualizada com sucesso.");
 	}
 
 	private ResponseEntity<?> validarReservaDto(ReservaDto reservaDto) {
-
-		if (reservaDto.getClienteId() == null || reservaDto.getClienteId() == null
-				|| reservaDto.getAcomodacaoId() == null) {
+		if (reservaDto.getClienteId() == null || reservaDto.getAcomodacaoId() == null) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados obrigatórios não fornecidos.");
 		}
 		return null;
@@ -155,43 +183,27 @@ public class ReservaServiceImpl implements ReservaService {
 
 	@Override
 	public ResponseEntity<?> editarStatus(Integer reservaId, String status) {
-		Reserva reserva = reservaRepository.getReferenceById(reservaId);
-
-		if (reserva.getId() == reservaId) {
-
-			switch (status) {
-			case "Em andamento": {
-				reserva.setStatus(Status.EM_ANDAMENTO);
-				reservaRepository.save(reserva);
-				return ResponseEntity.status(HttpStatus.CREATED).body("Status da reserva atualizado com sucesso.");
-			}
-			case "Confirmado": {
-				reserva.setStatus(Status.CONFIRMADO);
-				reservaRepository.save(reserva);
-				return ResponseEntity.status(HttpStatus.CREATED).body("Status da reserva atualizado com sucesso.");
-			}
-			case "Cancelado": {
-				reserva.setStatus(Status.CANCELADO);
-				reservaRepository.save(reserva);
-				return ResponseEntity.status(HttpStatus.CREATED).body("Status da reserva atualizado com sucesso.");
-			}
-			case "Pendente": {
-				reserva.setStatus(Status.PENDENTE);
-				reservaRepository.save(reserva);
-				return ResponseEntity.status(HttpStatus.CREATED).body("Status da reserva atualizado com sucesso.");
-			}
-			default:
-				throw new IllegalArgumentException("Unexpected value: " + status);
-			}
-
+		Optional<Reserva> reservaOpt = reservaRepository.findById(reservaId);
+		if (reservaOpt.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reserva com ID " + reservaId + " não encontrada.");
 		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + status + " não encontrado.");
+
+		Reserva reserva = reservaOpt.get();
+		Status novoStatus;
+		try {
+			novoStatus = Status.valueOf(status.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status inválido.");
+		}
+
+		reserva.setStatus(novoStatus);
+		reservaRepository.save(reserva);
+		return ResponseEntity.status(HttpStatus.OK).body("Status da reserva atualizado com sucesso.");
 	}
 
+	@Override
 	public ReservaDto reservaById(Integer reservaId) {
-
-		Reserva reserva = reservaRepository.findById(reservaId)
-				.orElseThrow(() -> new NoSuchElementException("Reserva não encontrada com o ID: " + reservaId));
+		Reserva reserva = reservaRepository.findById(reservaId).orElseThrow();
 
 		Integer responsavelId = reserva.getFuncionario() != null ? reserva.getFuncionario().getId() : null;
 		Integer clienteId = reserva.getCliente() != null ? reserva.getCliente().getId() : null;
@@ -201,13 +213,12 @@ public class ReservaServiceImpl implements ReservaService {
 				reserva.getDataFim(), reserva.getStatus());
 	}
 
+	@Override
 	public Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim) {
-		List<ReservaDto> reservas = listarReservas();
 
-		List<ReservaDto> reservasAcomodacao = reservas.stream()
-				.filter(reserva -> reserva.getAcomodacaoId().equals(acomodacaoId)).toList();
+		List<Reserva> reservasAcomodacao = reservaRepository.findByAcomodacaoId(acomodacaoId);
 
-		for (ReservaDto reserva : reservasAcomodacao) {
+		for (Reserva reserva : reservasAcomodacao) {
 			LocalDateTime reservaInicio = reserva.getDataInicio();
 			LocalDateTime reservaFim = reserva.getDataFim();
 
@@ -219,5 +230,4 @@ public class ReservaServiceImpl implements ReservaService {
 
 		return true;
 	}
-
 }

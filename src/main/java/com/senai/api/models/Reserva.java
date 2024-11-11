@@ -19,12 +19,12 @@ public class Reserva {
 
 	@ManyToOne
 	@JoinColumn(name = "funcionario_id")
-	@JsonBackReference
+	@JsonIgnore
 	private Usuario funcionario;
 
 	@ManyToOne
 	@JoinColumn(name = "cliente_id")
-	@JsonIgnore
+	@JsonBackReference
 	private Cliente cliente;
 
 	@ManyToOne
