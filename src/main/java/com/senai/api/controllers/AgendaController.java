@@ -30,4 +30,9 @@ public class AgendaController {
 	    public List<AgendaMensalDto> obterAgendaMensal(@PathVariable LocalDateTime mes, @PathVariable Integer acomodacaoId) {
 	        return agendaService.gerarAgendaMensal(mes, acomodacaoId);
 	    }
+	  
+	  @GetMapping("/agenda/{mes}")
+	    public List<AgendaMensalDto> obterAgendaTempoReal(@PathVariable LocalDateTime mes) {
+	        return agendaService.gerarAgendaTempoReal(mes);
+	    }
 }

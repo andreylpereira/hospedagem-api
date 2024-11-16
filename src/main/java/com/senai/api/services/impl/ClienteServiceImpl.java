@@ -33,6 +33,13 @@ public class ClienteServiceImpl implements ClienteService {
 	@Override
 	public ResponseEntity<?> cadastrar(ClienteDto clienteDto, Integer usuarioId) {
 
+		if (clienteDto == null || clienteDto.getCpf().trim().length() == 0 || clienteDto.getEmail().trim().length() == 0
+				|| clienteDto.getEndereco().trim().length() == 0 || clienteDto.getNome().trim().length() == 0
+				|| clienteDto.getTelefone().trim().length() == 0) {
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+					.body("Formulário está incompleto, preencha todos os dados.");
+		}
+
 		String cpf = usuarioService.formatCpf(clienteDto.getCpf());
 		Boolean isUser = usuarioRepository.findById(usuarioId).isPresent();
 		Boolean isExists = clienteRepository.existsByCpf(cpf);
@@ -51,20 +58,28 @@ public class ClienteServiceImpl implements ClienteService {
 		cliente.setCpf(cpf);
 		cliente.setFuncionario(funcionario);
 		clienteRepository.save(cliente);
-		return ResponseEntity.status(HttpStatus.CREATED).body("Cliente adicionado ao banco de dados.");
+		return ResponseEntity.status(HttpStatus.CREATED).body("Cliente cadastrado com sucesso.");
 
 	}
 
 	@Override
 	public ResponseEntity<?> editar(ClienteDto clienteDto, Integer usuarioId, Integer clienteId) {
+
+		if (clienteDto == null || clienteDto.getCpf().trim().length() == 0 || clienteDto.getEmail().trim().length() == 0
+				|| clienteDto.getEndereco().trim().length() == 0 || clienteDto.getNome().trim().length() == 0
+				|| clienteDto.getTelefone().trim().length() == 0) {
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+					.body("Formulário está incompleto, preencha todos os dados.");
+		}
+
 		String cpf = usuarioService.formatCpf(clienteDto.getCpf());
 		Boolean isUser = usuarioRepository.findById(usuarioId).isPresent();
 
 		Boolean isExists = clienteRepository.existsById(clienteId);
 		if (!isExists) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("Não existe cliente com este ID.");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Cliente não cadastrado no sistema.");
 		} else if (!isUser) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("Funcionário não existe.");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Funcionário não cadastrado no sistema.");
 		}
 
 		Cliente cliente = new Cliente();
@@ -74,7 +89,7 @@ public class ClienteServiceImpl implements ClienteService {
 		cliente.setCpf(cpf);
 		cliente.setFuncionario(funcionario);
 		clienteRepository.save(cliente);
-		return ResponseEntity.status(HttpStatus.CREATED).body("Cliente atualizado no banco de dados.");
+		return ResponseEntity.status(HttpStatus.CREATED).body("Cliente atualizado com sucesso.");
 
 	}
 
@@ -84,7 +99,7 @@ public class ClienteServiceImpl implements ClienteService {
 			List<Cliente> clientes = clienteRepository.findAll();
 			return ResponseEntity.status(HttpStatus.OK).body(clientes);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Não foi possível recuperar dados.");
 		}
 	}
 
@@ -94,7 +109,7 @@ public class ClienteServiceImpl implements ClienteService {
 			Cliente cliente = clienteRepository.getReferenceById(clienteId);
 			return ResponseEntity.status(HttpStatus.OK).body(cliente);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Não foi possível recuperar dados.");
 		}
 	}
 

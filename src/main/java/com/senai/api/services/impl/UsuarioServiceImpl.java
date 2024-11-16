@@ -35,9 +35,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 		String cpf = formatCpf(usuarioDto.getCpf());
 		String cpfCriptografado = HashUtil.hashCpf(cpf);
-		Boolean isAvaible = validCpf(cpf) && usuarioRepository.findByCpf(cpfCriptografado).isEmpty();
+		Boolean isAvaible = usuarioRepository.findByCpf(cpfCriptografado).isEmpty();
 
-		if (isAvaible && usuarioDto != null) {
+		if (!validCpf(cpf)) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("O CPF fornecido é inválido.");
+		} else if (isAvaible && usuarioDto != null) {
 			Usuario usuario = new Usuario();
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.getSenha());
 			BeanUtils.copyProperties(usuarioDto, usuario);
@@ -46,7 +48,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 			usuario.setSenha(senhaCriptografada);
 
 			usuarioRepository.save(usuario);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Usuário adicionado com sucesso.");
+			return ResponseEntity.status(HttpStatus.CREATED).body("Usuário cadastrado com sucesso.");
 
 		} else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não foi possivel criar.");
@@ -74,20 +76,26 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 		}
 
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + usuarioId + " não encontrado.");
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possível atualizar o usuário.");
 	}
 
 	@Override
 	public ResponseEntity<?> editarSenha(UsuarioDto usuarioDto, Integer usuarioId) {
 
+		Boolean isEmpty = usuarioDto.getSenha().trim().length() == 0;
+		if (isEmpty) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("A senha fornecida é inválida.");
+		}
+		
 		Usuario usuario = usuarioRepository.getReferenceById(usuarioId);
+			
 		if (usuario.getId() == usuarioId) {
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.getSenha());
 			usuario.setSenha(senhaCriptografada);
 			usuarioRepository.save(usuario);
 			return ResponseEntity.status(HttpStatus.CREATED).body("Senha atualizada com sucesso.");
 		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + usuarioId + " não encontrado.");
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possível atualizar a senha.");
 	}
 
 	@Override
@@ -183,7 +191,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 	public ResponseEntity<?> recuperarUsuarios() {
 		try {
 			List<Usuario> usuarios = usuarioRepository.findAll();
-			//Simplificando os dados de apresentação
 			usuarios.forEach(a -> {
 				a.setCpf(null);
 				a.setSenha(null);
@@ -199,7 +206,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 	public ResponseEntity<?> recuperarUsuario(Integer usuarioId) {
 		try {
 			Usuario usuario = usuarioRepository.getReferenceById(usuarioId);
-			//Simplificando os dados de apresentação
 			usuario.setCpf(null);
 			usuario.setSenha(null);
 			return ResponseEntity.status(HttpStatus.OK).body(usuario);

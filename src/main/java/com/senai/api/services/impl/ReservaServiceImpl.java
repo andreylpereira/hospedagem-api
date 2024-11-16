@@ -46,6 +46,11 @@ public class ReservaServiceImpl implements ReservaService {
 			return validarReserva;
 		}
 
+		if (reservaDto.getDataInicio() == null || reservaDto.getDataFim() == null) {
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+					.body("O período de reserva não foi definido corretamente.");
+		}
+
 		Boolean isAvailable = verificarDisponibilidade(reservaDto.getAcomodacaoId(), reservaDto.getDataInicio(),
 				reservaDto.getDataFim());
 		if (!isAvailable) {
@@ -79,8 +84,14 @@ public class ReservaServiceImpl implements ReservaService {
 	@Override
 	public ResponseEntity<?> editar(ReservaDto reservaDto, Integer reservaId) {
 		Optional<Reserva> reservaExistenteOpt = reservaRepository.findById(reservaId);
+
+		if (reservaDto.getDataInicio() == null || reservaDto.getDataFim() == null) {
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+					.body("O período de reserva não foi definido corretamente.");
+		}
+
 		if (reservaExistenteOpt.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reserva de ID " + reservaId + " não encontrada.");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reserva não encontrada.");
 		}
 
 		Reserva reservaExistente = reservaExistenteOpt.get();
@@ -193,7 +204,7 @@ public class ReservaServiceImpl implements ReservaService {
 		try {
 			novoStatus = Status.valueOf(status.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status inválido.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Perfil inválido.");
 		}
 
 		reserva.setStatus(novoStatus);

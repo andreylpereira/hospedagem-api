@@ -4,88 +4,103 @@ import java.time.LocalDateTime;
 
 public class AgendaMensalDto {
 
-    private Integer reservaId;
-    private String clienteNome;
-    private String clienteEmail;
-    private String clienteTelefone;
-    private String funcionarioNome;
-    private String acomodacaoNome;
-    private LocalDateTime dataInicio;
-    private LocalDateTime dataFim;
+	private Integer reservaId;
+	private String clienteNome;
+	private String clienteEmail;
+	private String clienteTelefone;
+	private String funcionarioNome;
+	private String acomodacaoNome;
+	private Integer acomodacaoId;
+	private LocalDateTime dataInicio;
+	private LocalDateTime dataFim;
 
-    public AgendaMensalDto(Integer reservaId, String clienteNome, String clienteEmail, String clienteTelefone,
-                           String funcionarioNome, String acomodacaoNome, LocalDateTime dataInicio, LocalDateTime dataFim) {
-        this.reservaId = reservaId;
-        this.clienteNome = clienteNome;
-        this.clienteEmail = clienteEmail;
-        this.clienteTelefone = clienteTelefone;
-        this.funcionarioNome = funcionarioNome;
-        this.acomodacaoNome = acomodacaoNome;
-        this.dataInicio = dataInicio;
-        this.dataFim = dataFim;
-    }
+	public AgendaMensalDto() {
+	}
 
-    public Integer getReservaId() {
-        return reservaId;
-    }
+	public AgendaMensalDto(Integer reservaId, String clienteNome, String clienteEmail, String clienteTelefone,
+			String funcionarioNome, String acomodacaoNome, Integer acomodacaoId, LocalDateTime dataInicio,
+			LocalDateTime dataFim) {
+		this.reservaId = reservaId;
+		this.clienteNome = clienteNome;
+		this.clienteEmail = clienteEmail;
+		this.clienteTelefone = clienteTelefone;
+		this.funcionarioNome = funcionarioNome;
+		this.acomodacaoNome = acomodacaoNome;
+		this.acomodacaoId = acomodacaoId;
+		this.dataInicio = dataInicio;
+		this.dataFim = dataFim;
+	}
 
-    public void setReservaId(Integer reservaId) {
-        this.reservaId = reservaId;
-    }
+	public Integer getReservaId() {
+		return reservaId;
+	}
 
-    public String getClienteNome() {
-        return clienteNome;
-    }
+	public void setReservaId(Integer reservaId) {
+		this.reservaId = reservaId;
+	}
 
-    public void setClienteNome(String clienteNome) {
-        this.clienteNome = clienteNome;
-    }
+	public String getClienteNome() {
+		return clienteNome;
+	}
 
-    public String getClienteEmail() {
-        return clienteEmail;
-    }
+	public void setClienteNome(String clienteNome) {
+		this.clienteNome = clienteNome;
+	}
 
-    public void setClienteEmail(String clienteEmail) {
-        this.clienteEmail = clienteEmail;
-    }
+	public String getClienteEmail() {
+		return clienteEmail;
+	}
 
-    public String getClienteTelefone() {
-        return clienteTelefone;
-    }
+	public void setClienteEmail(String clienteEmail) {
+		this.clienteEmail = clienteEmail;
+	}
 
-    public void setClienteTelefone(String clienteTelefone) {
-        this.clienteTelefone = clienteTelefone;
-    }
+	public String getClienteTelefone() {
+		return clienteTelefone;
+	}
 
-    public String getFuncionarioNome() {
-        return funcionarioNome;
-    }
+	public void setClienteTelefone(String clienteTelefone) {
+		this.clienteTelefone = clienteTelefone;
+	}
 
-    public void setFuncionarioNome(String funcionarioNome) {
-        this.funcionarioNome = funcionarioNome;
-    }
+	public String getFuncionarioNome() {
+		return funcionarioNome;
+	}
 
-    public String getAcomodacaoNome() {
-        return acomodacaoNome;
-    }
+	public void setFuncionarioNome(String funcionarioNome) {
+		this.funcionarioNome = funcionarioNome;
+	}
 
-    public void setAcomodacaoNome(String acomodacaoNome) {
-        this.acomodacaoNome = acomodacaoNome;
-    }
+	public String getAcomodacaoNome() {
+		return acomodacaoNome;
+	}
 
-    public LocalDateTime getDataInicio() {
-        return dataInicio;
-    }
+	public void setAcomodacaoNome(String acomodacaoNome) {
+		this.acomodacaoNome = acomodacaoNome;
+	}
 
-    public void setDataInicio(LocalDateTime dataInicio) {
-        this.dataInicio = dataInicio;
-    }
+	public Integer getAcomodacaoId() {
+		return acomodacaoId;
+	}
 
-    public LocalDateTime getDataFim() {
-        return dataFim;
-    }
+	public void setAcomodacaoId(Integer acomodacaoId) {
+		this.acomodacaoId = acomodacaoId;
+	}
 
-    public void setDataFim(LocalDateTime dataFim) {
-        this.dataFim = dataFim;
-    }
+	public LocalDateTime getDataInicio() {
+		return dataInicio;
+	}
+
+	public void setDataInicio(LocalDateTime dataInicio) {
+		this.dataInicio = dataInicio;
+	}
+
+	public LocalDateTime getDataFim() {
+		return dataFim;
+	}
+
+	public void setDataFim(LocalDateTime dataFim) {
+		this.dataFim = dataFim;
+	}
+
 }

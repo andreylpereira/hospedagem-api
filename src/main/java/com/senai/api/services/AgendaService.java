@@ -14,5 +14,5 @@ public interface AgendaService {
 	List<AgendaDto> gerarAgenda(LocalDateTime mes, Integer acomodacaoId);
 
 	List<AgendaMensalDto> gerarAgendaMensal(LocalDateTime mes, Integer acomodacaoId);
-
+	List<AgendaMensalDto> gerarAgendaTempoReal(LocalDateTime mes);
 }

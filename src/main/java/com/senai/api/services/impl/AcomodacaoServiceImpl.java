@@ -41,14 +41,14 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 		Boolean isUser = usuarioRepository.findById(usuarioId).isPresent();
 		if (!isUser || acomodacaoDto == null || acomodacaoDto.getAmenidades() == null
 				|| acomodacaoDto.getAmenidades().isEmpty()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados da acomodação não fornecidos.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Os dados da acomodação estão incompletos.");
 		}
 
 		Set<Amenidade> amenidades = new HashSet<>();
 		for (Amenidade amenidade : acomodacaoDto.getAmenidades()) {
-			Amenidade persistedAmenidade = amenidadeRepository.findById(amenidade.getId())
+			Amenidade amenidadesCadastradas = amenidadeRepository.findById(amenidade.getId())
 					.orElseThrow(() -> new RuntimeException("Amenidade não encontrada com ID: " + amenidade.getId()));
-			amenidades.add(persistedAmenidade);
+			amenidades.add(amenidadesCadastradas);
 		}
 		Usuario funcionario = usuarioRepository.getReferenceById(usuarioId);
 		Acomodacao acomodacao = new Acomodacao();
@@ -81,7 +81,7 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 					amenidades.add(amenidadeOptional.get());
 				} else {
 					return ResponseEntity.status(HttpStatus.NOT_FOUND)
-							.body("Acomodação com ID " + amenidade.getId() + " não encontrada.");
+							.body("Amenidade com ID " + amenidade.getId() + " não encontrada.");
 				}
 			}
 			acomodacao.setAmenidades(amenidades);
@@ -90,7 +90,7 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 			return ResponseEntity.status(HttpStatus.CREATED).body("Acomodação atualizada com sucesso.");
 		} else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body("Amenidade com ID " + acomodacaoId + " não encontrada.");
+					.body("Acomodação com ID " + acomodacaoId + " não encontrada.");
 		}
 	}
 
@@ -103,7 +103,7 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 			acomodacaoRepository.save(acomodacao);
 			return ResponseEntity.status(HttpStatus.CREATED).body("Estado da acomodação atualizado com sucesso.");
 		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + acomodacaoId + " não encontrado.");
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Acomodação com ID " + acomodacaoId + " não encontrado.");
 	}
 	
 	@Override

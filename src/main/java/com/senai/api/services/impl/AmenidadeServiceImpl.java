@@ -28,8 +28,11 @@ public class AmenidadeServiceImpl implements AmenidadeService {
 		Amenidade amenidade = new Amenidade();
 		Boolean isExists = amenidadeRepository.existsByNome(amenidadeDto.getNome());
 		Boolean isUser = usuarioRepository.findById(usuarioId).isPresent();
+		Boolean isEmpty = amenidadeDto.getNome().trim().length() == 0;
 
-		if (!isExists && isUser) {
+		if (isEmpty) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Amenidade deve ter um nome válido.");
+		} else if (!isExists && isUser) {
 			Usuario funcionario = usuarioRepository.getReferenceById(usuarioId);
 			BeanUtils.copyProperties(amenidadeDto, amenidade);
 			amenidade.setFuncionario(funcionario);
@@ -43,8 +46,10 @@ public class AmenidadeServiceImpl implements AmenidadeService {
 	public ResponseEntity<?> editar(AmenidadeDto amenidadeDto, Integer usuarioId, Integer amenidadeId) {
 		boolean isExists = amenidadeRepository.existsById(amenidadeId);
 		Boolean isUser = usuarioRepository.findById(usuarioId).isPresent();
-
-		if (isExists && isUser) {
+		Boolean isEmpty = amenidadeDto.getNome().trim().length() == 0;
+		if (isEmpty) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Amenidade deve ter um nome válido.");
+		} else if (isExists && isUser) {
 			Amenidade amenidade = new Amenidade();
 			Usuario funcionario = usuarioRepository.getReferenceById(usuarioId);
 			BeanUtils.copyProperties(amenidadeDto, amenidade);
@@ -53,7 +58,7 @@ public class AmenidadeServiceImpl implements AmenidadeService {
 			amenidadeRepository.save(amenidade);
 			return ResponseEntity.status(HttpStatus.CREATED).body("Amenidade atualizada com sucesso");
 		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Amenidade com ID " + amenidadeId + " não encontrada.");
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Amenidade não encontrada.");
 	}
 
 	@Override
