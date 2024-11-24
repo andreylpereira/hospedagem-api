@@ -2,6 +2,8 @@ package com.senai.api.dto;
 
 import java.time.LocalDateTime;
 
+
+//DTO utilizado para montar calendario do mês e identificar se o dia está ocupado e por qual reserva
 public class AgendaDto {
 	private LocalDateTime data;
 	private boolean ocupado;

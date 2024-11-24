@@ -30,6 +30,10 @@ public class ClienteServiceImpl implements ClienteService {
 		this.usuarioRepository = usuarioRepository;
 	}
 
+	
+	/*
+	 * Verifica todos os dados do payload da requisição por condicional e cadastra o cliente.
+	 * */
 	@Override
 	public ResponseEntity<?> cadastrar(ClienteDto clienteDto, Integer usuarioId) {
 
@@ -62,6 +66,12 @@ public class ClienteServiceImpl implements ClienteService {
 
 	}
 
+	
+	
+	/*
+	 * Verifica todos os dados do payload da requisição por condicional, como também o que retorna de cliente do banco de dados,
+	 * posteriormente atualiza o cliente.
+	 * */
 	@Override
 	public ResponseEntity<?> editar(ClienteDto clienteDto, Integer usuarioId, Integer clienteId) {
 

@@ -11,6 +11,7 @@ import com.senai.api.repository.UsuarioRepository;
 import com.senai.api.services.UsuarioService;
 import com.senai.api.utils.HashUtil;
 
+// Esse componente verificar se o primeiro administrador foi cadastrado, caso não, efetua o cadastro. A criação do primeiro admin serve para ter um ponto de inicio para a aplicação.
 @Component
 public class AdminInitializer implements CommandLineRunner {
 

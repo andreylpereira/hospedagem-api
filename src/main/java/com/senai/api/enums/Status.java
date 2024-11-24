@@ -6,7 +6,8 @@ public enum Status {
     EM_ANDAMENTO("Em andamento"),
     CONFIRMADO("Confirmado"),
     CANCELADO("Cancelado"),
-    PENDENTE("Pendente");
+    PENDENTE("Pendente"),
+	CONCLUIDO("Concluído");
 
     private final String descricao;
 

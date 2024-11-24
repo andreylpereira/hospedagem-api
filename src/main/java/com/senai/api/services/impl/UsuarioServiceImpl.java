@@ -30,6 +30,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 		this.passwordEncoder = passwordEncoder;
 	}
 
+	/*
+	 * Efetua o cadastro de usuário, onde o cpf de entrada é formatado. Depois é verificado se é valido,
+	 * se já não foi cadastrado, o mesmo é criptografado por meio de Hash e a senha por meio do bcrypt.
+	 * */
 	@Override
 	public ResponseEntity<?> cadastrar(UsuarioDto usuarioDto) throws NoSuchAlgorithmException {
 
@@ -55,6 +59,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 		}
 	}
 
+	/*
+	 * Método não disponível por não está no escopo da aplicação, verifica se o usuário existe no banco de dados,
+	 * e atualiza os dados, incluindo a utilizada do HASH e do bcrypt.
+	 * */
 	@Override
 	public ResponseEntity<?> editar(UsuarioDto usuarioDto, Integer usuarioId) throws NoSuchAlgorithmException {
 
@@ -79,6 +87,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possível atualizar o usuário.");
 	}
 
+	/*
+	 * Atualiza a senha, verifica se não está vazio o dado do payload, se o usuário existe e aplica o bcrypt antes de inserir no banco.
+	 * */
 	@Override
 	public ResponseEntity<?> editarSenha(UsuarioDto usuarioDto, Integer usuarioId) {
 
@@ -116,6 +127,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + usuarioId + " não encontrado.");
 	}
 
+	//Lógica para verificar se é um cpf
 	public Boolean isCpf(String CPF) {
 
 		if (CPF.equals("00000000000") || CPF.equals("11111111111") || CPF.equals("22222222222")
@@ -166,6 +178,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		}
 	}
 
+	//Formatador de cpf, tirando pontuação e etc
 	public String formatCpf(String cpf) {
 		if (cpf.contains(".")) {
 			cpf = cpf.replace(".", "");
@@ -179,6 +192,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return cpf;
 	}
 
+	//Aplica o formatador e o verificador de CPF em uma string de entrada e retorna se é um cpf valido.
 	public Boolean validCpf(String cpf) {
 
 		String format = formatCpf(cpf);

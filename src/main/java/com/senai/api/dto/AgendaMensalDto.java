@@ -2,6 +2,7 @@ package com.senai.api.dto;
 
 import java.time.LocalDateTime;
 
+//DTO utilizado na montagem da agenda diaria(tempo real) e de cada acomodação.
 public class AgendaMensalDto {
 
 	private Integer reservaId;
@@ -10,6 +11,7 @@ public class AgendaMensalDto {
 	private String clienteTelefone;
 	private String funcionarioNome;
 	private String acomodacaoNome;
+	private String reservaStatus;
 	private Integer acomodacaoId;
 	private LocalDateTime dataInicio;
 	private LocalDateTime dataFim;
@@ -18,14 +20,15 @@ public class AgendaMensalDto {
 	}
 
 	public AgendaMensalDto(Integer reservaId, String clienteNome, String clienteEmail, String clienteTelefone,
-			String funcionarioNome, String acomodacaoNome, Integer acomodacaoId, LocalDateTime dataInicio,
-			LocalDateTime dataFim) {
+			String funcionarioNome, String acomodacaoNome, String reservaStatus, Integer acomodacaoId,
+			LocalDateTime dataInicio, LocalDateTime dataFim) {
 		this.reservaId = reservaId;
 		this.clienteNome = clienteNome;
 		this.clienteEmail = clienteEmail;
 		this.clienteTelefone = clienteTelefone;
 		this.funcionarioNome = funcionarioNome;
 		this.acomodacaoNome = acomodacaoNome;
+		this.reservaStatus = reservaStatus;
 		this.acomodacaoId = acomodacaoId;
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
@@ -77,6 +80,14 @@ public class AgendaMensalDto {
 
 	public void setAcomodacaoNome(String acomodacaoNome) {
 		this.acomodacaoNome = acomodacaoNome;
+	}
+
+	public String getReservaStatus() {
+		return reservaStatus;
+	}
+
+	public void setReservaStatus(String reservaStatus) {
+		this.reservaStatus = reservaStatus;
 	}
 
 	public Integer getAcomodacaoId() {

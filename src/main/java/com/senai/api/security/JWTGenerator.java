@@ -34,7 +34,6 @@ public class JWTGenerator {
 		claims.put("nome", usuario.get().getNome());
 		claims.put("perfil", authentication.getAuthorities());
 
-		// setando o que vai no token
 		String token = Jwts.builder().setClaims(claims).setSubject(username).setIssuedAt(new Date())
 				.setExpiration(expireDate).signWith(SignatureAlgorithm.HS512, SecurityConstants.JWT_SECRET).compact();
 

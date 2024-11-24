@@ -38,6 +38,10 @@ public class ReservaServiceImpl implements ReservaService {
 		this.reservaRepository = reservaRepository;
 	}
 
+	/*
+	 * Valida os dados de entrada da reserva, depois se está disponivel para reserva.
+	 * Caso passar pelas validações efetua a reserva.
+	 * */
 	@Override
 	public ResponseEntity<?> cadastrar(ReservaDto reservaDto) {
 
@@ -81,6 +85,10 @@ public class ReservaServiceImpl implements ReservaService {
 		return ResponseEntity.status(HttpStatus.CREATED).body("Reserva efetuada com sucesso.");
 	}
 
+	/*
+	 * Busca uma reserva do banco de dados e verifica se ela existe ou não. Também valida os dados do corpo da requisição.
+	 * Faz também validações comparando o corpo da requisição com a reserva que foi buscada do banco, caso estiver OK, faz atualização/edição no banco.
+	 * */
 	@Override
 	public ResponseEntity<?> editar(ReservaDto reservaDto, Integer reservaId) {
 		Optional<Reserva> reservaExistenteOpt = reservaRepository.findById(reservaId);
@@ -108,20 +116,17 @@ public class ReservaServiceImpl implements ReservaService {
 			reservaExistente.setStatus(reservaDto.getStatus());
 		}
 
-		if (!reservaExistente.getDataInicio().equals(reservaDto.getDataInicio())
-				|| !reservaExistente.getDataFim().equals(reservaDto.getDataFim())) {
-
 			Boolean isAvailable = verificarDisponibilidade(reservaDto.getAcomodacaoId(), reservaDto.getDataInicio(),
-					reservaDto.getDataFim());
+					reservaDto.getDataFim(), reservaId);
 			if (!isAvailable) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 						.body("O período solicitado de reserva está ocupado.");
+			} else {				
+				isAlterado = true;
+				reservaExistente.setDataInicio(reservaDto.getDataInicio());
+				reservaExistente.setDataFim(reservaDto.getDataFim());	
 			}
 
-			isAlterado = true;
-			reservaExistente.setDataInicio(reservaDto.getDataInicio());
-			reservaExistente.setDataFim(reservaDto.getDataFim());
-		}
 
 		if (!reservaExistente.getCliente().getId().equals(reservaDto.getClienteId())) {
 			isAlterado = true;
@@ -159,6 +164,7 @@ public class ReservaServiceImpl implements ReservaService {
 		return ResponseEntity.status(HttpStatus.OK).body("Reserva atualizada com sucesso.");
 	}
 
+	//Validador da reserva utilizado no cadastrar/editar
 	private ResponseEntity<?> validarReservaDto(ReservaDto reservaDto) {
 		if (reservaDto.getClienteId() == null || reservaDto.getAcomodacaoId() == null) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados obrigatórios não fornecidos.");
@@ -166,6 +172,9 @@ public class ReservaServiceImpl implements ReservaService {
 		return null;
 	}
 
+	/*
+	 * Verificar se os ID's não são nulo, caso contrario retorna o respectivo objeto do banco. 
+	  */
 	private Usuario fetchUsuario(Integer usuarioId) {
 		return usuarioId != null ? usuarioRepository.findById(usuarioId).orElse(null) : null;
 	}
@@ -192,6 +201,10 @@ public class ReservaServiceImpl implements ReservaService {
 		}).collect(Collectors.toList());
 	}
 
+	
+	/*
+	 * Método não utilizado, tendo em vista que na regra de negócio a edição do status é feita por meio do editar. 
+	  */
 	@Override
 	public ResponseEntity<?> editarStatus(Integer reservaId, String status) {
 		Optional<Reserva> reservaOpt = reservaRepository.findById(reservaId);
@@ -224,6 +237,11 @@ public class ReservaServiceImpl implements ReservaService {
 				reserva.getDataFim(), reserva.getStatus());
 	}
 
+	
+	
+	/*
+	 * Verificador de disponibilidade para o cadastro, verifica se o periodo esta ocupado, comparando o que trás do banco com os LocalDateTime da requisição.
+	 * */
 	@Override
 	public Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim) {
 
@@ -240,5 +258,29 @@ public class ReservaServiceImpl implements ReservaService {
 		}
 
 		return true;
+	}
+	
+	/*
+	 * Verificador de disponibilidade para o editar, verifica se o periodo esta ocupado, comparando o que trás do banco com os LocalDateTime da requisição.
+	 * Ele ignora os dados da reserva que está sendo editada/atualizada.
+	 * */
+	public Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim, Integer reservaId) {
+
+	    List<Reserva> reservasAcomodacao = reservaRepository.findByAcomodacaoId(acomodacaoId);
+
+	    for (Reserva reserva : reservasAcomodacao) {
+	        LocalDateTime reservaInicio = reserva.getDataInicio();
+	        LocalDateTime reservaFim = reserva.getDataFim();
+
+	     
+	        if (!reserva.getId().equals(reservaId)) {
+	     
+	            if (dataInicio.isBefore(reservaFim) && dataFim.isAfter(reservaInicio)) {
+	                return false;
+	            }
+	        }
+	    }
+
+	    return true;
 	}
 }

@@ -39,6 +39,12 @@ public class AgendaServiceImpl implements AgendaService {
 		this.usuarioRepository = usuarioRepository;
 	}
 
+	
+	/*
+	* Com base nos dados de entrada (acomodação e o mês), monta um calendario informando em cada dia
+	*  se está ocupado ou não a acomodação e a ID da reserva(caso estiver ocupado).
+	*  Agenda utilizada para apresentar dias ocupados daquele mês, naquela acomodação no input Calendar.
+	*/
 	public List<AgendaDto> gerarAgenda(LocalDateTime mes, Integer acomodacaoId) {
 		List<AgendaDto> agenda = new ArrayList<>();
 		Map<LocalDate, Boolean> disponibilidade = new HashMap<>();
@@ -94,6 +100,9 @@ public class AgendaServiceImpl implements AgendaService {
 		return agenda;
 	}
 
+	
+	
+	
 	public List<AgendaMensalDto> gerarAgendaMensal(LocalDateTime mes, Integer acomodacaoId) {
 	    List<AgendaMensalDto> agenda = new ArrayList<>();
 	    Set<Integer> reservasAdicionadas = new HashSet<>();
@@ -135,16 +144,18 @@ public class AgendaServiceImpl implements AgendaService {
 	                Acomodacao acomodacao = acomodacaoRepository.findById(reserva.getAcomodacaoId()).orElse(null);
 
 	                AgendaMensalDto agendaDto = new AgendaMensalDto(
-	                    reserva.getId(),
-	                    cliente != null ? cliente.getNome() : "Cliente não encontrado",
-	                    cliente != null ? cliente.getEmail() : "Não informado",
-	                    cliente != null ? cliente.getTelefone() : "Não informado",
-	                    funcionario != null ? funcionario.getNome() : "Funcionário não encontrado",
-	                    acomodacao != null ? acomodacao.getNome() : "Acomodação não encontrada",
-	                    acomodacao != null ? acomodacao.getId() : null,  
-	                    dataInicio,
-	                    dataFim
-	                );
+	                	    reserva.getId(), 
+	                	    cliente != null ? cliente.getNome() : "Cliente não encontrado", 
+	                	    cliente != null ? cliente.getEmail() : "Não informado", 
+	                	    cliente != null ? cliente.getTelefone() : "Não informado", 
+	                	    funcionario != null ? funcionario.getNome() : "Funcionário não encontrado", 
+	                	    acomodacao != null ? acomodacao.getNome() : "Acomodação não encontrada", 
+	                	    reserva.getStatus() != null ? reserva.getStatus().toString() : "Status não informado",
+	                	    acomodacao != null ? acomodacao.getId() : null,  
+	                	    dataInicio, 
+	                	    dataFim
+	                	);
+
 
 	                reservasAdicionadas.add(reserva.getId());
 
@@ -156,7 +167,9 @@ public class AgendaServiceImpl implements AgendaService {
 	    return agenda;
 	}
 
-	
+	/*
+	 * Gera a agenda diaria para apresentar no painel de temp oreal
+	 * */
 	public List<AgendaMensalDto> gerarAgendaTempoReal(LocalDateTime mes) { 
 	    List<AgendaMensalDto> agenda = new ArrayList<>(); 
 	    Set<Integer> reservasAdicionadas = new HashSet<>();  
@@ -167,7 +180,7 @@ public class AgendaServiceImpl implements AgendaService {
 	    for (ReservaDto reserva : reservas) { 
 	        LocalDateTime dataInicio = reserva.getDataInicio(); 
 	        LocalDateTime dataFim = reserva.getDataFim();  
-
+	        
 	        if (dataInicio.getYear() == mes.getYear() && dataInicio.getMonth() == mes.getMonth()) {  
 	            LocalDate dataInicioDia = dataInicio.toLocalDate(); 
 	            LocalDate dataFimDia = dataFim.toLocalDate();  
@@ -179,8 +192,8 @@ public class AgendaServiceImpl implements AgendaService {
 	                dataFimDia = ultimoDiaDoMesAtual; 
 	            }  
 
-	            if ((mes.isEqual(dataInicio) || mes.isEqual(dataFim)) || 
-	                (mes.isAfter(dataInicio) && mes.isBefore(dataFim))) {
+	            if ((mes.toLocalDate().isEqual(dataInicio.toLocalDate()) || mes.toLocalDate().isEqual(dataFim.toLocalDate())) || 
+	            	    (mes.toLocalDate().isAfter(dataInicio.toLocalDate()) && mes.toLocalDate().isBefore(dataFim.toLocalDate()))) {
 	                
 	                if (reservasAdicionadas.contains(reserva.getId())) { 
 	                    continue; 
@@ -200,6 +213,7 @@ public class AgendaServiceImpl implements AgendaService {
 	                        cliente != null ? cliente.getTelefone() : "Não informado", 
 	                        funcionario != null ? funcionario.getNome() : "Funcionário não encontrado", 
 	                        acomodacao != null ? acomodacao.getNome() : "Acomodação não encontrada", 
+	                        reserva.getStatus() != null ? reserva.getStatus().toString() : "Status não informado",
 	                        acomodacao != null ? acomodacao.getId() : null,  
 	                        dataInicio, 
 	                        dataFim

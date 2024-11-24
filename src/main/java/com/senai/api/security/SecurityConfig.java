@@ -29,6 +29,11 @@ public class SecurityConfig {
         this.customUserDetailsService = customUserDetailsService;
     }
 
+    /*
+     * Definindo o ponto permitido:  Autenticação via login;
+     * Entre os pontos que são acessados por meio de autenticação, apenas o cadastro de usuário SOMENTE o perfil de ADMINISTRADOR é permitido.
+     * Os demais pontos, tanto Perfil FUNCIONARIO, como ADMINISTRADOR têm acesso.
+     * */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
@@ -39,7 +44,6 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/login/**").permitAll() 
                 .requestMatchers("/api/usuario/lista/**").hasAnyAuthority(Perfil.FUNCIONARIO.getDescricao(), Perfil.ADMINISTRADOR.getDescricao())
                 .requestMatchers("/api/usuario/atualizarSenha/**").hasAnyAuthority(Perfil.FUNCIONARIO.getDescricao(), Perfil.ADMINISTRADOR.getDescricao())
-                .requestMatchers("/api/usuario/atualizarUsuario/**").hasAnyAuthority(Perfil.FUNCIONARIO.getDescricao(), Perfil.ADMINISTRADOR.getDescricao())
                 .requestMatchers("/api/usuario/cadastrarUsuario/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao())
                 .requestMatchers("/api/usuario/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao())
                 .requestMatchers("/api/hospedagem/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao(), Perfil.FUNCIONARIO.getDescricao())
@@ -47,10 +51,9 @@ public class SecurityConfig {
             )
             .httpBasic();
 
-        // Adiciona o filtro JWT antes do filtro de autenticação padrão
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        // Configuração CORS
+        // Configuração CORS para a porta da aplicação react
         http.cors(cors -> cors.configurationSource(request -> {
             var corsConfig = new org.springframework.web.cors.CorsConfiguration();
             corsConfig.setAllowedOrigins(java.util.List.of("http://localhost:3000")); 
