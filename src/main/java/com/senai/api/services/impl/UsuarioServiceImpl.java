@@ -1,6 +1,8 @@
 package com.senai.api.services.impl;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.InputMismatchException;
+import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,77 +13,121 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.senai.api.dto.UsuarioDto;
-
 import com.senai.api.models.Usuario;
 import com.senai.api.repository.UsuarioRepository;
 import com.senai.api.services.UsuarioService;
+import com.senai.api.utils.HashUtil;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 
-	@Autowired
 	private UsuarioRepository usuarioRepository;
-	@SuppressWarnings("unused")
-	@Autowired
 	private PasswordEncoder passwordEncoder;
 
+	@Autowired
+	public UsuarioServiceImpl(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+		this.usuarioRepository = usuarioRepository;
+		this.passwordEncoder = passwordEncoder;
+	}
+
+	/*
+	 * Efetua o cadastro de usuário, onde o cpf de entrada é formatado. Depois é verificado se é valido,
+	 * se já não foi cadastrado, o mesmo é criptografado por meio de Hash e a senha por meio do bcrypt.
+	 * */
 	@Override
-	public ResponseEntity<?> cadastrar(UsuarioDto usuarioDto) {
+	public ResponseEntity<?> cadastrar(UsuarioDto usuarioDto) throws NoSuchAlgorithmException {
 
 		String cpf = formatCpf(usuarioDto.getCpf());
-		Boolean isAvaible = validCpf(cpf) && usuarioRepository.findByCpf(cpf).isEmpty();
+		String cpfCriptografado = HashUtil.hashCpf(cpf);
+		Boolean isAvaible = usuarioRepository.findByCpf(cpfCriptografado).isEmpty();
 
-		if (isAvaible && usuarioDto != null) {
+		if (!validCpf(cpf)) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("O CPF fornecido é inválido.");
+		} else if (isAvaible && usuarioDto != null) {
 			Usuario usuario = new Usuario();
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.getSenha());
 			BeanUtils.copyProperties(usuarioDto, usuario);
 
-			usuario.setCpf(cpf);
+			usuario.setCpf(cpfCriptografado);
 			usuario.setSenha(senhaCriptografada);
 
 			usuarioRepository.save(usuario);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Usuário adicionado com sucesso.");
+			return ResponseEntity.status(HttpStatus.CREATED).body("Usuário cadastrado com sucesso.");
 
 		} else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não foi possivel criar.");
 		}
 	}
 
+	/*
+	 * Método não disponível por não está no escopo da aplicação, verifica se o usuário existe no banco de dados,
+	 * e atualiza os dados, incluindo a utilizada do HASH e do bcrypt.
+	 * */
 	@Override
-	public ResponseEntity<?> editar(UsuarioDto usuarioDto, Integer usuarioId) {
+	public ResponseEntity<?> editar(UsuarioDto usuarioDto, Integer usuarioId) throws NoSuchAlgorithmException {
 
 		boolean isExists = usuarioRepository.existsById(usuarioId);
 
 		if (isExists) {
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.getSenha());
+			String cpf = formatCpf(usuarioDto.getCpf());
+			String cpfCriptografado = HashUtil.hashCpf(cpf);
 			Usuario usuario = new Usuario();
 
 			BeanUtils.copyProperties(usuarioDto, usuario);
-			usuario.setCpf(formatCpf(usuarioDto.getCpf()));
+			usuario.setCpf(cpfCriptografado);
 			usuario.setSenha(senhaCriptografada);
 			usuario.setId(usuarioId);
 			usuarioRepository.save(usuario);
- 
+
 			return ResponseEntity.status(HttpStatus.CREATED).body("Usuário atualizado com sucesso.");
 
 		}
 
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + usuarioId + " não encontrado.");
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possível atualizar o usuário.");
 	}
 
+	/*
+	 * Atualiza a senha, verifica se não está vazio o dado do payload, se o usuário existe e aplica o bcrypt antes de inserir no banco.
+	 * */
 	@Override
 	public ResponseEntity<?> editarSenha(UsuarioDto usuarioDto, Integer usuarioId) {
+
+		Boolean isEmpty = usuarioDto.getSenha().trim().length() == 0;
+		if (isEmpty) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("A senha fornecida é inválida.");
+		}
 		
 		Usuario usuario = usuarioRepository.getReferenceById(usuarioId);
+			
 		if (usuario.getId() == usuarioId) {
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.getSenha());
 			usuario.setSenha(senhaCriptografada);
 			usuarioRepository.save(usuario);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Senha atualizadaa com sucesso.");
-					}
+			return ResponseEntity.status(HttpStatus.CREATED).body("Senha atualizada com sucesso.");
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possível atualizar a senha.");
+	}
+
+	@Override
+	public Boolean verificarCpfExistente(String cpf) throws Exception {
+		String cpfHash = HashUtil.hashCpf(cpf);
+		return usuarioRepository.findByCpf(cpfHash).isPresent();
+	}
+
+	@Override
+	public ResponseEntity<?> editarPermissao(Integer usuarioId, boolean habilitado) {
+		Usuario usuario = usuarioRepository.getReferenceById(usuarioId);
+
+		if (usuario.getId() == usuarioId) {
+			usuario.setHabilitado(habilitado);
+			usuarioRepository.save(usuario);
+			return ResponseEntity.status(HttpStatus.CREATED).body("Senha atualizada com sucesso.");
+		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + usuarioId + " não encontrado.");
 	}
-	
+
+	//Lógica para verificar se é um cpf
 	public Boolean isCpf(String CPF) {
 
 		if (CPF.equals("00000000000") || CPF.equals("11111111111") || CPF.equals("22222222222")
@@ -132,6 +178,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		}
 	}
 
+	//Formatador de cpf, tirando pontuação e etc
 	public String formatCpf(String cpf) {
 		if (cpf.contains(".")) {
 			cpf = cpf.replace(".", "");
@@ -145,6 +192,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return cpf;
 	}
 
+	//Aplica o formatador e o verificador de CPF em uma string de entrada e retorna se é um cpf valido.
 	public Boolean validCpf(String cpf) {
 
 		String format = formatCpf(cpf);
@@ -153,4 +201,30 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return valid;
 	}
 
+	@Override
+	public ResponseEntity<?> recuperarUsuarios() {
+		try {
+			List<Usuario> usuarios = usuarioRepository.findAll();
+			usuarios.forEach(a -> {
+				a.setCpf(null);
+				a.setSenha(null);
+			});
+			return ResponseEntity.status(HttpStatus.OK).body(usuarios);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+		}
+	}
+
+	
+	@Override
+	public ResponseEntity<?> recuperarUsuario(Integer usuarioId) {
+		try {
+			Usuario usuario = usuarioRepository.getReferenceById(usuarioId);
+			usuario.setCpf(null);
+			usuario.setSenha(null);
+			return ResponseEntity.status(HttpStatus.OK).body(usuario);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+		}
+	}
 }

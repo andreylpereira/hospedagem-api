@@ -1,7 +1,6 @@
 package com.senai.api.controllers;
 
-import java.util.List;
-
+import java.security.NoSuchAlgorithmException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.senai.api.dto.UsuarioDto;
-import com.senai.api.models.Usuario;
 import com.senai.api.repository.UsuarioRepository;
 import com.senai.api.services.UsuarioService;
 
@@ -21,35 +19,44 @@ import com.senai.api.services.UsuarioService;
 @RequestMapping("/api/usuario")
 public class UsuarioController {
 
-	@Autowired
 	private UsuarioService usuarioService;
-	@Autowired
 	private UsuarioRepository usuarioRepository;
-	
-	
-	@GetMapping("/lista")
-	public List<Usuario> getUsuarios() {
-		return usuarioRepository.findAll();
-	}
-	
-	@GetMapping("/lista/{usuarioId}")
-	public Usuario getUsuario(@PathVariable Integer usuarioId) {
-		return usuarioRepository.getReferenceById(usuarioId);
+
+	@Autowired
+	public UsuarioController(UsuarioService usuarioService, UsuarioRepository usuarioRepository) {
+		this.usuarioService = usuarioService;
+		this.usuarioRepository = usuarioRepository;
 	}
 
-	@PostMapping("/cadastrarUsuario")
-	public ResponseEntity<?> insertUsuario(@RequestBody UsuarioDto usuarioDto) {
+	@GetMapping("/lista")
+	public ResponseEntity<?> findUsuarios() {
+		return usuarioService.recuperarUsuarios();
+	}
+
+	@GetMapping("/lista/{usuarioId}")
+	public ResponseEntity<?> findUsuario(@PathVariable Integer usuarioId) {
+		return usuarioService.recuperarUsuario(usuarioId);
+	}
+
+	@PostMapping("/cadastrar")
+	public ResponseEntity<?> insertUsuario(@RequestBody UsuarioDto usuarioDto) throws NoSuchAlgorithmException {
 		return usuarioService.cadastrar(usuarioDto);
 	}
-	
-	@PutMapping("/atualizarUsuario/{usuarioId}")
-	public ResponseEntity<?> editUsuario(@RequestBody UsuarioDto usuarioDto, @PathVariable Integer usuarioId) {
+
+	@PutMapping("/atualizar/{usuarioId}")
+	public ResponseEntity<?> editUsuario(@RequestBody UsuarioDto usuarioDto, @PathVariable Integer usuarioId)
+			throws NoSuchAlgorithmException {
 		return usuarioService.editar(usuarioDto, usuarioId);
 	}
-	
+
 	@PutMapping("/atualizarSenha/{usuarioId}")
 	public ResponseEntity<?> resetUsuario(@RequestBody UsuarioDto usuarioDto, @PathVariable Integer usuarioId) {
 		return usuarioService.editarSenha(usuarioDto, usuarioId);
+	}
+
+	@PutMapping("/lista/{usuarioId}/{habilitado}")
+	public ResponseEntity<?> updateHabilitado(@PathVariable Integer usuarioId, @PathVariable boolean habilitado) {
+		return usuarioService.editarPermissao(usuarioId, habilitado);
 	}
 
 }

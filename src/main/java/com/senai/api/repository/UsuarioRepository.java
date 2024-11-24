@@ -11,4 +11,5 @@ import com.senai.api.models.Usuario;
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
 	Optional<Usuario> findByCpf(String cpf);
+
 }

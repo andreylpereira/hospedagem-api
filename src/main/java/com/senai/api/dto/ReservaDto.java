@@ -1,27 +1,28 @@
 package com.senai.api.dto;
+
 import java.time.LocalDateTime;
 
 import com.senai.api.enums.Status;
 
 public class ReservaDto {
-    private Integer id;
-    private Integer responsavelId;
-    private Integer clienteId;
-    private Integer acomodacaoId;
-    private LocalDateTime dataInicio;
-    private LocalDateTime dataFim;
-    private Status status;
+	private Integer id;
+	private Integer funcionarioId;
+	private Integer clienteId;
+	private Integer acomodacaoId;
+	private LocalDateTime dataInicio;
+	private LocalDateTime dataFim;
+	private Status status;
 
-    public ReservaDto(Integer id, Integer responsavelId, Integer clienteId, Integer acomodacaoId,
-                      LocalDateTime dataInicio, LocalDateTime dataFim, Status status) {
-        this.id = id;
-        this.responsavelId = responsavelId;
-        this.clienteId = clienteId;
-        this.acomodacaoId = acomodacaoId;
-        this.dataInicio = dataInicio;
-        this.dataFim = dataFim;
-        this.status = status;
-    }
+	public ReservaDto(Integer id, Integer funcionarioId, Integer clienteId, Integer acomodacaoId,
+			LocalDateTime dataInicio, LocalDateTime dataFim, Status status) {
+		this.id = id;
+		this.funcionarioId = funcionarioId;
+		this.clienteId = clienteId;
+		this.acomodacaoId = acomodacaoId;
+		this.dataInicio = dataInicio;
+		this.dataFim = dataFim;
+		this.status = status;
+	}
 
 	public Integer getId() {
 		return id;
@@ -31,12 +32,12 @@ public class ReservaDto {
 		this.id = id;
 	}
 
-	public Integer getResponsavelId() {
-		return responsavelId;
+	public Integer getFuncionarioId() {
+		return funcionarioId;
 	}
 
-	public void setResponsavelId(Integer responsavelId) {
-		this.responsavelId = responsavelId;
+	public void setFuncionarioId(Integer funcionarioId) {
+		this.funcionarioId = funcionarioId;
 	}
 
 	public Integer getClienteId() {
@@ -79,5 +80,4 @@ public class ReservaDto {
 		this.status = status;
 	}
 
-    
 }

@@ -1,5 +1,6 @@
 package com.senai.api.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -17,5 +18,9 @@ public interface ReservaService {
 	List<ReservaDto> listarReservas();
 
 	ReservaDto reservaById(Integer reservaId);
+
+	ResponseEntity<?> editarStatus(Integer reservaId, String status);
+
+	Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim);
 
 }

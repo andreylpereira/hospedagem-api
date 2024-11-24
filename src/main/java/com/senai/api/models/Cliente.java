@@ -2,15 +2,16 @@ package com.senai.api.models;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "clientes")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Cliente {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
@@ -23,11 +24,16 @@ public class Cliente {
 	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
 	private Set<Reserva> reservas;
 
+	@ManyToOne
+	@JoinColumn(name = "funcionario_id")
+	@JsonIgnore
+	private Usuario funcionario;
+
 	public Cliente() {
 	}
 
 	public Cliente(Integer id, String cpf, String nome, String email, String telefone, String endereco,
-			Set<Reserva> reservas) {
+			Set<Reserva> reservas, Usuario funcionario) {
 		this.id = id;
 		this.cpf = cpf;
 		this.nome = nome;
@@ -35,6 +41,7 @@ public class Cliente {
 		this.telefone = telefone;
 		this.endereco = endereco;
 		this.reservas = reservas;
+		this.funcionario = funcionario;
 	}
 
 	public Integer getId() {
@@ -91,6 +98,14 @@ public class Cliente {
 
 	public void setReservas(Set<Reserva> reservas) {
 		this.reservas = reservas;
+	}
+
+	public Usuario getFuncionario() {
+		return funcionario;
+	}
+
+	public void setFuncionario(Usuario funcionario) {
+		this.funcionario = funcionario;
 	}
 
 }

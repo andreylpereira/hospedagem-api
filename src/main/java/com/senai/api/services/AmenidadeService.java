@@ -8,7 +8,12 @@ import com.senai.api.dto.AmenidadeDto;
 @Service
 public interface AmenidadeService {
 
-	ResponseEntity<?> cadastrar(AmenidadeDto amenidadeDto);
-	ResponseEntity<?> editar(AmenidadeDto amenidadeDto, Integer amenidadeId);
+	ResponseEntity<?> cadastrar(AmenidadeDto amenidadeDto, Integer usuarioId);
+
+	ResponseEntity<?> editar(AmenidadeDto amenidadeDto, Integer usuarioId, Integer amenidadeId);
+
+	ResponseEntity<?> recuperarAmenidades();
+
+	ResponseEntity<?> recuperarAmenidade(Integer amenidadeId);
 
 }

@@ -8,8 +8,12 @@ import com.senai.api.dto.ClienteDto;
 @Service
 public interface ClienteService {
 
-	ResponseEntity<?> cadastrar(ClienteDto clienteDto);
+	ResponseEntity<?> cadastrar(ClienteDto clienteDto, Integer usuarioId);
 
-	ResponseEntity<?> editar(ClienteDto clienteDto, Integer clienteId);
+	ResponseEntity<?> editar(ClienteDto clienteDto, Integer usuarioId, Integer clienteId);
+
+	ResponseEntity<?> recuperarClientes();
+
+	ResponseEntity<?> recuperarCliente(Integer clienteId);
 
 }

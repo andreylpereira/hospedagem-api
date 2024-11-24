@@ -17,14 +17,14 @@ public class Reserva {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "responsavel_id")
-    @JsonBackReference
-    private Usuario responsavel;
+	@ManyToOne
+	@JoinColumn(name = "funcionario_id")
+	@JsonIgnore
+	private Usuario funcionario;
 
 	@ManyToOne
 	@JoinColumn(name = "cliente_id")
-	@JsonIgnore
+	@JsonBackReference
 	private Cliente cliente;
 
 	@ManyToOne
@@ -42,10 +42,10 @@ public class Reserva {
 	public Reserva() {
 	}
 
-	public Reserva(Integer id, Usuario responsavel, Cliente cliente, Acomodacao acomodacao, LocalDateTime dataInicio,
+	public Reserva(Integer id, Usuario funcionario, Cliente cliente, Acomodacao acomodacao, LocalDateTime dataInicio,
 			LocalDateTime dataFim, Status status) {
 		this.id = id;
-		this.responsavel = responsavel;
+		this.funcionario = funcionario;
 		this.cliente = cliente;
 		this.acomodacao = acomodacao;
 		this.dataInicio = dataInicio;
@@ -61,12 +61,12 @@ public class Reserva {
 		this.id = id;
 	}
 
-	public Usuario getResponsavel() {
-		return responsavel;
+	public Usuario getFuncionario() {
+		return funcionario;
 	}
 
-	public void setResponsavel(Usuario responsavel) {
-		this.responsavel = responsavel;
+	public void setFuncionario(Usuario funcionario) {
+		this.funcionario = funcionario;
 	}
 
 	public Cliente getCliente() {

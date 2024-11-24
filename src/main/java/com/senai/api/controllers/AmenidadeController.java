@@ -1,7 +1,5 @@
 package com.senai.api.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.senai.api.dto.AmenidadeDto;
-import com.senai.api.models.Amenidade;
 import com.senai.api.repository.AmenidadeRepository;
 import com.senai.api.services.AmenidadeService;
 
@@ -21,30 +18,34 @@ import com.senai.api.services.AmenidadeService;
 @RequestMapping("/api/hospedagem")
 public class AmenidadeController {
 
-	@Autowired
 	private AmenidadeService amenidadeService;
-	
-	@Autowired
 	private AmenidadeRepository amenidadeRepository;
 
-	@PostMapping("/amenidades")
-	public ResponseEntity<?> insertAmenidade(@RequestBody AmenidadeDto amenidadeDto) {
-		return amenidadeService.cadastrar(amenidadeDto);
+	@Autowired
+	public AmenidadeController(AmenidadeService amenidadeService, AmenidadeRepository amenidadeRepository) {
+		this.amenidadeService = amenidadeService;
+		this.amenidadeRepository = amenidadeRepository;
 	}
-	
-	@PutMapping("/amenidades/{amenidadeId}") 
-	public ResponseEntity<?> updateAmenidades(@RequestBody AmenidadeDto amenidadeDto,@PathVariable Integer amenidadeId) {
-		return amenidadeService.editar(amenidadeDto, amenidadeId);	
+
+	@PostMapping("{usuarioId}/amenidades")
+	public ResponseEntity<?> insertAmenidade(@RequestBody AmenidadeDto amenidadeDto, @PathVariable Integer usuarioId) {
+		return amenidadeService.cadastrar(amenidadeDto, usuarioId);
 	}
-	
-	@GetMapping("/amenidades") 
-	public List<Amenidade> getAmenidades() {
-		return amenidadeRepository.findAll();		
+
+	@PutMapping("{usuarioId}/amenidades/{amenidadeId}")
+	public ResponseEntity<?> updateAmenidades(@RequestBody AmenidadeDto amenidadeDto, @PathVariable Integer usuarioId,
+			@PathVariable Integer amenidadeId) {
+		return amenidadeService.editar(amenidadeDto, usuarioId, amenidadeId);
 	}
-	
-	@GetMapping("/amenidades/{amenidadeId}") 
-	public Amenidade recuperarAmenidades(@PathVariable Integer amenidadeId) {
-		return amenidadeRepository.getReferenceById(amenidadeId);
+
+	@GetMapping("/amenidades")
+	public ResponseEntity<?> findAmenidades() {
+		return amenidadeService.recuperarAmenidades();
+	}
+
+	@GetMapping("/amenidades/{amenidadeId}")
+	public ResponseEntity<?> findAmenidade(@PathVariable Integer amenidadeId) {
+		return amenidadeService.recuperarAmenidade(amenidadeId);
 	}
 
 }
