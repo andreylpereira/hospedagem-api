@@ -62,22 +62,24 @@ public class AmenidadeServiceImpl implements AmenidadeService {
 	}
 
 	@Override
-	public ResponseEntity<?> recuperarAmenidades() {
+	public ResponseEntity<List<Amenidade>> recuperarAmenidades() {
 		try {
 			List<Amenidade> amenidades = amenidadeRepository.findAll();
 			return ResponseEntity.status(HttpStatus.OK).body(amenidades);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);	
 		}
 	}
 
 	@Override
-	public ResponseEntity<?> recuperarAmenidade(Integer amenidadeId) {
+	public ResponseEntity<Amenidade> recuperarAmenidade(Integer amenidadeId) {
 		try {
 			Amenidade amenidade = amenidadeRepository.getReferenceById(amenidadeId);
 			return ResponseEntity.status(HttpStatus.OK).body(amenidade);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);	
 		}
 	}
 

@@ -91,9 +91,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 	 * Atualiza a senha, verifica se não está vazio o dado do payload, se o usuário existe e aplica o bcrypt antes de inserir no banco.
 	 * */
 	@Override
-	public ResponseEntity<?> editarSenha(UsuarioDto usuarioDto, Integer usuarioId) {
+	public ResponseEntity<?> editarSenha(String senha, Integer usuarioId) {
 
-		Boolean isEmpty = usuarioDto.getSenha().trim().length() == 0;
+		Boolean isEmpty = senha.trim().length() == 0;
 		if (isEmpty) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("A senha fornecida é inválida.");
 		}
@@ -101,7 +101,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		Usuario usuario = usuarioRepository.getReferenceById(usuarioId);
 			
 		if (usuario.getId() == usuarioId) {
-			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.getSenha());
+			String senhaCriptografada = new BCryptPasswordEncoder().encode(senha);
 			usuario.setSenha(senhaCriptografada);
 			usuarioRepository.save(usuario);
 			return ResponseEntity.status(HttpStatus.CREATED).body("Senha atualizada com sucesso.");
@@ -202,7 +202,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
 	@Override
-	public ResponseEntity<?> recuperarUsuarios() {
+	public ResponseEntity<List<Usuario>> recuperarUsuarios() {
 		try {
 			List<Usuario> usuarios = usuarioRepository.findAll();
 			usuarios.forEach(a -> {
@@ -211,20 +211,22 @@ public class UsuarioServiceImpl implements UsuarioService {
 			});
 			return ResponseEntity.status(HttpStatus.OK).body(usuarios);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+			 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                     .body(null);		
 		}
 	}
 
 	
 	@Override
-	public ResponseEntity<?> recuperarUsuario(Integer usuarioId) {
+	public ResponseEntity<Usuario> recuperarUsuario(Integer usuarioId) {
 		try {
 			Usuario usuario = usuarioRepository.getReferenceById(usuarioId);
 			usuario.setCpf(null);
 			usuario.setSenha(null);
 			return ResponseEntity.status(HttpStatus.OK).body(usuario);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+			 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                     .body(null);	
 		}
 	}
 }

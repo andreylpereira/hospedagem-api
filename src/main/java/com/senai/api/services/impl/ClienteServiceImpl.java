@@ -104,22 +104,24 @@ public class ClienteServiceImpl implements ClienteService {
 	}
 
 	@Override
-	public ResponseEntity<?> recuperarClientes() {
+	public ResponseEntity<List<Cliente>> recuperarClientes() {
 		try {
 			List<Cliente> clientes = clienteRepository.findAll();
 			return ResponseEntity.status(HttpStatus.OK).body(clientes);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("Não foi possível recuperar dados.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);	
 		}
 	}
 
 	@Override
-	public ResponseEntity<?> recuperarCliente(Integer clienteId) {
+	public ResponseEntity<Cliente> recuperarCliente(Integer clienteId) {
 		try {
 			Cliente cliente = clienteRepository.getReferenceById(clienteId);
 			return ResponseEntity.status(HttpStatus.OK).body(cliente);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("Não foi possível recuperar dados.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);	
 		}
 	}
 

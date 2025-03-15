@@ -11,7 +11,7 @@ import com.senai.api.dto.AgendaMensalDto;
 @Service
 public interface AgendaService {
 
-	List<AgendaDto> gerarAgenda(LocalDateTime mes, Integer acomodacaoId);
+	List<AgendaDto> gerarCalendarioMensal(LocalDateTime mes, Integer acomodacaoId);
 	List<AgendaMensalDto> gerarAgendaMensal(LocalDateTime mes, Integer acomodacaoId);
-	List<AgendaMensalDto> gerarAgendaTempoReal(LocalDateTime mes);
+	List<AgendaMensalDto> gerarAgendaTempoReal(LocalDateTime dia);
 }

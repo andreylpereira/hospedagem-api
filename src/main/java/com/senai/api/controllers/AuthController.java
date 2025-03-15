@@ -1,7 +1,5 @@
 package com.senai.api.controllers;
 
-import jakarta.validation.Valid;
-
 import java.security.NoSuchAlgorithmException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +15,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.senai.api.dto.AuthDto;
 import com.senai.api.dto.AuthResponseDto;
 import com.senai.api.models.Usuario;
 import com.senai.api.repository.UsuarioRepository;
 import com.senai.api.security.JWTGenerator;
+import com.senai.api.security.SecurityConfig;
 import com.senai.api.services.UsuarioService;
 import com.senai.api.utils.HashUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/")
+@Tag(name = "Autenticação", description = "Operação de autenticação de usuário")
 public class AuthController {
 
 	private AuthenticationManager authenticationManager;
@@ -45,12 +53,16 @@ public class AuthController {
 	}
 
 	@PostMapping("/api/auth/login")
-	public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid Usuario usuario) throws NoSuchAlgorithmException {
+	@Operation(summary = "Autentica e autoriza usuário", description = "Com credênciais de cpf e senha efetua autenticação na aplicação retornando um token.")
+	@ApiResponse(responseCode = "202", description = "Usuário autenticado com sucesso.")
+	@ApiResponse(responseCode = "401", description = "Usuário não autorizado.",
+		    content = @Content(mediaType = "application/json"))
+	public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid AuthDto authDto) throws NoSuchAlgorithmException {
 
-		String cpf = usuarioService.formatCpf(usuario.getCpf());
+		String cpf = usuarioService.formatCpf(authDto.getCpf());
 		String cpfCriptografado = HashUtil.hashCpf(cpf);
 		Authentication authentication = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken(cpfCriptografado, usuario.getSenha()));
+				.authenticate(new UsernamePasswordAuthenticationToken(cpfCriptografado, authDto.getSenha()));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String token = jwtGenerator.generateToken(authentication);
 

@@ -107,25 +107,27 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 	}
 	
 	@Override
-	public ResponseEntity<?> recuperarAcomodacao(Integer acomodacaoId) {
+	public ResponseEntity<Acomodacao> recuperarAcomodacao(Integer acomodacaoId) {
 		try {
 			Acomodacao acomodacao = acomodacaoRepository.getReferenceById(acomodacaoId);
 	
 			acomodacao.setReservas(null);
 			return ResponseEntity.status(HttpStatus.OK).body(acomodacao);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);	
 		}
 	}
 	
 	@Override
-	public ResponseEntity<?> recuperarAcomodacoes() {
+	public ResponseEntity<List<Acomodacao>> recuperarAcomodacoes() {
 		try {
 			List<Acomodacao> acomodacoes = acomodacaoRepository.findAll();
 	
 			return ResponseEntity.status(HttpStatus.OK).body(acomodacoes);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);	
 		}
 	}
 }

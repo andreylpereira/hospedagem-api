@@ -1,9 +1,12 @@
 package com.senai.api.services;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.senai.api.dto.AmenidadeDto;
+import com.senai.api.models.Amenidade;
 
 @Service
 public interface AmenidadeService {
@@ -12,8 +15,8 @@ public interface AmenidadeService {
 
 	ResponseEntity<?> editar(AmenidadeDto amenidadeDto, Integer usuarioId, Integer amenidadeId);
 
-	ResponseEntity<?> recuperarAmenidades();
+	ResponseEntity<List<Amenidade>> recuperarAmenidades();
 
-	ResponseEntity<?> recuperarAmenidade(Integer amenidadeId);
+	ResponseEntity<Amenidade> recuperarAmenidade(Integer amenidadeId);
 
 }

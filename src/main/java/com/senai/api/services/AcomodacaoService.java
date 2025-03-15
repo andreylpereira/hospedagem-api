@@ -1,9 +1,12 @@
 package com.senai.api.services;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.senai.api.dto.AcomodacaoDto;
+import com.senai.api.models.Acomodacao;
 
 @Service
 public interface AcomodacaoService {
@@ -14,8 +17,8 @@ public interface AcomodacaoService {
 
 	ResponseEntity<?> habilitadoDesabilitado(Integer acomodacaoId, boolean habilitado);
 
-	ResponseEntity<?> recuperarAcomodacao(Integer acomodacaoId);
+	ResponseEntity<Acomodacao> recuperarAcomodacao(Integer acomodacaoId);
 
-	ResponseEntity<?> recuperarAcomodacoes();
+	ResponseEntity<List<Acomodacao>> recuperarAcomodacoes();
 
 }
