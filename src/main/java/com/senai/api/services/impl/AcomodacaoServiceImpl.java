@@ -73,6 +73,8 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 			acomodacao.setCapacidade(acomodacaoDto.getCapacidade());
 			acomodacao.setPreco(acomodacaoDto.getPreco());
 			acomodacao.setHabilitado(acomodacaoDto.isHabilitado());
+			acomodacao.setBase64Image(acomodacaoDto.getBase64Image());
+			acomodacao.setContentType(acomodacaoDto.getContentType());
 
 			Set<Amenidade> amenidades = new HashSet<>();
 			for (Amenidade amenidade : acomodacaoDto.getAmenidades()) {

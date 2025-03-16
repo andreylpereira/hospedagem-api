@@ -4,6 +4,10 @@ import java.util.Set;
 
 import com.senai.api.models.Amenidade;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Lob;
+import jakarta.validation.constraints.NotBlank;
+
 public class AcomodacaoDto {
 
 	private Integer id;
@@ -15,6 +19,8 @@ public class AcomodacaoDto {
 	private double preco;
 	private Set<Amenidade> amenidades;
 	private boolean habilitado;
+	private String contentType;
+	private String base64Image;
 
 	public AcomodacaoDto() {
 	}
@@ -90,5 +96,22 @@ public class AcomodacaoDto {
 	public void setHabilitado(boolean habilitado) {
 		this.habilitado = habilitado;
 	}
+
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
+
+	public String getBase64Image() {
+		return base64Image;
+	}
+
+	public void setBase64Image(String base64Image) {
+		this.base64Image = base64Image;
+	}
+
 
 }
