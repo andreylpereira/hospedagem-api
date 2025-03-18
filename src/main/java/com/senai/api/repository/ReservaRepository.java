@@ -12,4 +12,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
 
 	List<Reserva> findByAcomodacaoId(Integer acomodacaoId);
 
+	List<Reserva> findAllByAcomodacaoId(Integer acomodacaoId);
+
 }

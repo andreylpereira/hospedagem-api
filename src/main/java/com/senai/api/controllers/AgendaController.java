@@ -29,8 +29,7 @@ public class AgendaController {
 	@GetMapping("/agenda/datas/{acomodacaoId}/{mes}")
 	@Operation(summary = "Gera calendário do mês com a disponibilidade da acomodação em cada dia", description = "Com os parâmetros mês e o id da acomodação, gerá um calendário do mês, informando cada dia do mês e um boolean para identificar se o dia a acomodação está ocupada ou não.")
 	@ApiResponse(responseCode = "200", description = "O calendário mensal foi gerado com sucesso.")
-	@ApiResponse(responseCode = "400", description = "Não foi possível gerar o calendário mensal.",
-		    content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "400", description = "Não foi possível gerar o calendário mensal.", content = @Content(mediaType = "application/json"))
 	public List<AgendaDto> recuperarReservas(@PathVariable LocalDateTime mes, @PathVariable Integer acomodacaoId) {
 		return agendaService.gerarCalendarioMensal(mes, acomodacaoId);
 	}
@@ -38,8 +37,7 @@ public class AgendaController {
 	@GetMapping("/agenda/{acomodacaoId}/{mes}")
 	@Operation(summary = "Recupera uma lista de agendamentos efetuados no mês de acordo com a acomodação", description = "Com os parâmetros mês e o id da acomodação, gerá um calendário do mês, informando cada dia do mês e um boolean para identificar se o dia a acomodação está ocupada ou não.")
 	@ApiResponse(responseCode = "200", description = "Lista mensal de agendamento para acomodação foi gerado com sucesso.")
-	@ApiResponse(responseCode = "400", description = "Não foi possível gerar o calendário mensal da acomodação.",
-		    content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "400", description = "Não foi possível gerar o calendário mensal da acomodação.", content = @Content(mediaType = "application/json"))
 	public List<AgendaMensalDto> obterAgendaMensal(@PathVariable LocalDateTime mes,
 			@PathVariable Integer acomodacaoId) {
 		return agendaService.gerarAgendaMensal(mes, acomodacaoId);
@@ -48,8 +46,7 @@ public class AgendaController {
 	@GetMapping("/agenda/{dia}")
 	@Operation(summary = "Gera uma agenda do dia atual com a disponibilidade de cada acomodação", description = "Com a data do dia como parâmetro, gera uma lista com todas as acomodações, identificando a disponibilidade ou não da acomodação.")
 	@ApiResponse(responseCode = "200", description = "A agenda foi gerada com sucesso.")
-	@ApiResponse(responseCode = "400", description = "Não foi possível gerar a agenda.",
-		    content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "400", description = "Não foi possível gerar a agenda.", content = @Content(mediaType = "application/json"))
 	public List<AgendaMensalDto> obterAgendaTempoReal(@PathVariable LocalDateTime dia) {
 		return agendaService.gerarAgendaTempoReal(dia);
 	}
