@@ -32,14 +32,20 @@ public class ReservaController {
 	@Operation(summary = "Cadastra reserva", description = "Com um objeto reserva no corpo da requisição, efetua cadastro da reserva no banco de dados.")
 	@ApiResponse(responseCode = "201", description = "Reserva criada com sucesso.", content = @Content(mediaType = "application/json"))
 	@ApiResponse(responseCode = "400", description = "Os dados da reserva estão incompletos/inválidos.", content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "404", description = "Usuário criador não encontrado.", content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "404", description = "Cliente não encontrado.", content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "404", description = "Acomodação não encontrada.", content = @Content(mediaType = "application/json"))
 	public ResponseEntity<?> insertReserva(@RequestBody ReservaDto reservaDto) {
 		return reservaService.cadastrar(reservaDto);
 	}
 
 	@PutMapping("/reservas/{reservaId}")
 	@Operation(summary = "Atualiza dados da reserva", description = "Com reservaId como parâmetro e um objeto reserva no corpo da requisição, atualiza a reserva que possui o valor do id do parametro.")
-	@ApiResponse(responseCode = "201", description = "Dados da reserva foram atualizados com sucesso.", content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "200", description = "Dados da reserva foram atualizados com sucesso.", content = @Content(mediaType = "application/json"))
 	@ApiResponse(responseCode = "400", description = "Os dados estão incompletos/inválidos.", content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "404", description = "Usuário criador não encontrado.", content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "404", description = "Cliente não encontrado.", content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "404", description = "Acomodação não encontrada.", content = @Content(mediaType = "application/json"))
 	public ResponseEntity<?> updateReserva(@RequestBody ReservaDto reservaDto, @PathVariable Integer reservaId) {
 		return reservaService.editar(reservaDto, reservaId);
 	}

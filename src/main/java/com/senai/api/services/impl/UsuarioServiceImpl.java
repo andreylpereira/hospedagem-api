@@ -55,7 +55,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 			return ResponseEntity.status(HttpStatus.CREATED).body("Usuário cadastrado com sucesso.");
 
 		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não foi possivel criar.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não foi possivel cadastrar usuário.");
 		}
 	}
 
@@ -80,7 +80,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 			usuario.setId(usuarioId);
 			usuarioRepository.save(usuario);
 
-			return ResponseEntity.status(HttpStatus.CREATED).body("Usuário atualizado com sucesso.");
+			return ResponseEntity.status(HttpStatus.OK).body("Usuário atualizado com sucesso.");
 
 		}
 
@@ -104,7 +104,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(senha);
 			usuario.setSenha(senhaCriptografada);
 			usuarioRepository.save(usuario);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Senha atualizada com sucesso.");
+			return ResponseEntity.status(HttpStatus.OK).body("Senha atualizada com sucesso.");
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possível atualizar a senha.");
 	}
@@ -122,7 +122,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		if (usuario.getId() == usuarioId) {
 			usuario.setHabilitado(habilitado);
 			usuarioRepository.save(usuario);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Senha atualizada com sucesso.");
+			return ResponseEntity.status(HttpStatus.OK).body("Credencial atualizada com sucesso.");
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + usuarioId + " não encontrado.");
 	}

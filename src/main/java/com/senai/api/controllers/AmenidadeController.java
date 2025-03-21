@@ -40,8 +40,10 @@ public class AmenidadeController {
 	@Operation(summary = "Cadastra amenidade", description = "Com usuarioId como parâmetro e um objeto amenidade no corpo da requisição, efetua cadastro da amenidade no banco de dados.")
 	@ApiResponse(responseCode = "201", description = "Amenidade criada com sucesso.",
 		    content = @Content(mediaType = "application/json"))
-	@ApiResponse(responseCode = "400", description = "Os dados da amenidade estão incompletos.",
+	@ApiResponse(responseCode = "400", description = "Os dados da amenidade estão inválidos.",
 		    content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "409", description = "Amenidade deve ter um nome válido.",
+    content = @Content(mediaType = "application/json"))
 	public ResponseEntity<?> insertAmenidade(@RequestBody AmenidadeDto amenidadeDto, @PathVariable Integer usuarioId) {
 		return amenidadeService.cadastrar(amenidadeDto, usuarioId);
 	}
@@ -50,8 +52,10 @@ public class AmenidadeController {
 	@Operation(summary = "Atualiza dados da amenidade", description = "Com usuarioId e amenidadeId como parâmetros e um objeto amenidade no corpo da requisição, atualiza o usuário que possui o valor do id do parâmetro.")
 	@ApiResponse(responseCode = "201", description = "Dados da amenidade foram atualizados com sucesso.",
 		    content = @Content(mediaType = "application/json"))
-	@ApiResponse(responseCode = "400", description = "Os dados estão incompletos.",
+	@ApiResponse(responseCode = "404", description = "Amenidade não encontrada.",
 		    content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "409", description = "Amenidade deve ter um nome válido.",
+    content = @Content(mediaType = "application/json"))
 	public ResponseEntity<?> updateAmenidades(@RequestBody AmenidadeDto amenidadeDto, @PathVariable Integer usuarioId,
 			@PathVariable Integer amenidadeId) {
 		return amenidadeService.editar(amenidadeDto, usuarioId, amenidadeId);

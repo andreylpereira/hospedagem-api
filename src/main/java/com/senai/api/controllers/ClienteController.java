@@ -38,20 +38,28 @@ public class ClienteController {
 
 	@PostMapping("/{usuarioId}/clientes")
 	@Operation(summary = "Cadastra cliente", description = "Com usuarioId como parâmetro e um objeto cliente no corpo da requisição, efetua cadastro do cliente no banco de dados.")
-	@ApiResponse(responseCode = "201", description = "Cliente criado com sucesso.",
+	@ApiResponse(responseCode = "201", description = "Cliente cadastrado com sucesso.",
 		    content = @Content(mediaType = "application/json"))
-	@ApiResponse(responseCode = "400", description = "Os dados do cliente estão incompletos.",
+	@ApiResponse(responseCode = "409", description = "Cliente com o CPF inválido.",
 		    content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "409", description = "Cliente com o mesmo CPF já existe.",
+    content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "409", description = "Funcionário não existe.",
+    content = @Content(mediaType = "application/json"))
 	public ResponseEntity<?> insertCliente(@RequestBody ClienteDto clienteDto, @PathVariable Integer usuarioId) {
 		return clienteService.cadastrar(clienteDto, usuarioId);
 	}
 	
 	@PutMapping("{usuarioId}/clientes/{clienteId}")
 	@Operation(summary = "Atualiza dados do cliente", description = "Com usuarioId e clienteId como parâmetros e um objeto cliente no corpo da requisição, atualiza a reserva que possui o valor do id do parâmetro.")
-	@ApiResponse(responseCode = "201", description = "Dados do cliente foram atualizados com sucesso.",
+	@ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso.",
 		    content = @Content(mediaType = "application/json"))
-	@ApiResponse(responseCode = "400", description = "Os dados estão incompletos.",
-		    content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "409", description = "Formulário está incompleto, preencha todos os dados.",
+    content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "409", description = "Cliente não cadastrado no sistema.",
+    content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "409", description = "Funcionário não cadastrado no sistema.",
+    content = @Content(mediaType = "application/json"))
 	public ResponseEntity<?> updateCliente(@RequestBody ClienteDto clienteDto, @PathVariable Integer usuarioId,
 			@PathVariable Integer clienteId) {
 		return clienteService.editar(clienteDto, usuarioId, clienteId);

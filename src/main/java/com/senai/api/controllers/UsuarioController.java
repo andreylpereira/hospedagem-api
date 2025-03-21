@@ -61,15 +61,17 @@ public class UsuarioController {
 		    content = @Content(mediaType = "application/json"))
 	@ApiResponse(responseCode = "400", description = "Os dados do usuário estão incompletos ou inválidos.",
 		    content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "409", description = "O CPF fornecido é inválido.",
+    content = @Content(mediaType = "application/json"))
 	public ResponseEntity<?> insertUsuario(@RequestBody UsuarioDto usuarioDto) throws NoSuchAlgorithmException {
 		return usuarioService.cadastrar(usuarioDto);
 	}
 
 	@PutMapping("/atualizar/{usuarioId}")
-	@Operation(summary = "Atualiza dados de usuário", description = "Com usuarioId como parâmetro e um objeto usuário no corpo da requisição, atualiza o usuário que possui o valor do id do parâmetro.")
-	@ApiResponse(responseCode = "201", description = "Dados do usuário foram atualizados com sucesso.",
+	@Operation(summary = "Atualiza dados de usuário", description = "Com usuarioId como parâmetro e um objeto usuário no corpo da requisição, atualiza os dados usuário que possui o valor do id do parâmetro.")
+	@ApiResponse(responseCode = "200", description = "Dados do usuário foram atualizados com sucesso.",
 		    content = @Content(mediaType = "application/json"))
-	@ApiResponse(responseCode = "400", description = "Os dados estão incompletos.",
+	@ApiResponse(responseCode = "404", description = "Os dados estão incompletos.",
 		    content = @Content(mediaType = "application/json"))
 	public ResponseEntity<?> editUsuario(@RequestBody UsuarioDto usuarioDto, @PathVariable Integer usuarioId)
 			throws NoSuchAlgorithmException {
@@ -78,19 +80,21 @@ public class UsuarioController {
 
 	@PutMapping("/atualizarSenha/{usuarioId}")
 	@Operation(summary = "Atualiza a senha do usuário", description = "Com usuarioId como parâmetro e uma string com o valor de senha válido no corpo da requisição, atualiza a senha do usuário.")
-	@ApiResponse(responseCode = "201", description = "A senha atualizada com sucesso.",
+	@ApiResponse(responseCode = "200", description = "A senha atualizada com sucesso.",
 		    content = @Content(mediaType = "application/json"))
-	@ApiResponse(responseCode = "400", description = "Os dados estão incompletos/inválido.",
+	@ApiResponse(responseCode = "404", description = "Não foi possível atualizar a senha.",
 		    content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "409", description = "A senha fornecida é inválida.",
+    content = @Content(mediaType = "application/json"))
 	public ResponseEntity<?> resetUsuario(@RequestBody String senha, @PathVariable Integer usuarioId) {
 		return usuarioService.editarSenha(senha, usuarioId);
 	}
 
 	@PutMapping("/lista/{usuarioId}/{habilitado}")
 	@Operation(summary = "Habilita ou desabilita um usuário", description = "Com usuarioId e um boolean como parâmetros, altera a habilitacao do usuário com id do parametro no banco de dados, habilitando e desabilitando acesso do usuário no sistema.")
-	@ApiResponse(responseCode = "201", description = "A senha atualizada com sucesso.",
+	@ApiResponse(responseCode = "200", description = "Credencial de acesso do usuário atualizada com sucesso.",
 		    content = @Content(mediaType = "application/json"))
-	@ApiResponse(responseCode = "400", description = "Os dados estão incompletos/inválido.",
+	@ApiResponse(responseCode = "404", description = "Usuário não encontrado.",
 		    content = @Content(mediaType = "application/json"))
 	public ResponseEntity<?> updateHabilitado(@PathVariable Integer usuarioId, @PathVariable boolean habilitado) {
 		return usuarioService.editarPermissao(usuarioId, habilitado);

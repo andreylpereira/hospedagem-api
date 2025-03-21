@@ -89,7 +89,7 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 			acomodacao.setAmenidades(amenidades);
 			acomodacao.setFuncionario(funcionario);
 			acomodacaoRepository.save(acomodacao);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Acomodação atualizada com sucesso.");
+			return ResponseEntity.status(HttpStatus.OK).body("Acomodação atualizada com sucesso.");
 		} else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body("Acomodação com ID " + acomodacaoId + " não encontrada.");
@@ -103,7 +103,7 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 		if (acomodacao.getId() == acomodacaoId) {
 			acomodacao.setHabilitado(habilitado);
 			acomodacaoRepository.save(acomodacao);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Estado da acomodação atualizado com sucesso.");
+			return ResponseEntity.status(HttpStatus.OK).body("Estado da acomodação atualizado com sucesso.");
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Acomodação com ID " + acomodacaoId + " não encontrado.");
 	}

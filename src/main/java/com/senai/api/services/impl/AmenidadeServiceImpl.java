@@ -39,7 +39,7 @@ public class AmenidadeServiceImpl implements AmenidadeService {
 			amenidadeRepository.save(amenidade);
 			return ResponseEntity.status(HttpStatus.CREATED).body("Amenidade adicionada ao banco de dados.");
 		}
-		return ResponseEntity.status(HttpStatus.CONFLICT).body("Já existe uma amenidade com este nome.");
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Já existe uma amenidade com este nome.");
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class AmenidadeServiceImpl implements AmenidadeService {
 			amenidade.setId(amenidadeId);
 			amenidade.setFuncionario(funcionario);
 			amenidadeRepository.save(amenidade);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Amenidade atualizada com sucesso");
+			return ResponseEntity.status(HttpStatus.OK).body("Amenidade atualizada com sucesso.");
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Amenidade não encontrada.");
 	}

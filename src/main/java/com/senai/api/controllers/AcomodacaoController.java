@@ -38,7 +38,7 @@ public class AcomodacaoController {
 
 	@PostMapping("{usuarioId}/acomodacoes")
 	@Operation(summary = "Cadastra acomodação", description = "Com usuarioId como parâmetro e um objeto acomodação no corpo da requisição, efetua cadastro da acomodação no banco de dados.")
-	@ApiResponse(responseCode = "201", description = "Acomodação criada com sucesso.",
+	@ApiResponse(responseCode = "200", description = "Acomodação criada com sucesso.",
 		    content = @Content(mediaType = "application/json"))
 	@ApiResponse(responseCode = "400", description = "Os dados da acomodação estão incompletos.",
 		    content = @Content(mediaType = "application/json"))
@@ -49,10 +49,12 @@ public class AcomodacaoController {
 
 	@PutMapping("{usuarioId}/acomodacoes/{acomodacaoId}")
 	@Operation(summary = "Atualiza dados de acomodação", description = "Com usuarioId e acomodacaoId como parâmetros e um objeto acomodação no corpo da requisição, atualiza o usuário que possui o valor do id do parâmetro.")
-	@ApiResponse(responseCode = "201", description = "Dados da acomodação foram atualizados com sucesso.",
+	@ApiResponse(responseCode = "200", description = "Dados da acomodação foram atualizados com sucesso.",
 		    content = @Content(mediaType = "application/json"))
-	@ApiResponse(responseCode = "400", description = "Os dados estão incompletos.",
+	@ApiResponse(responseCode = "404", description = "Os dados das amenidades estão inválidos.",
 		    content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "404", description = "Os dados da acomodação está incompletos.",
+    content = @Content(mediaType = "application/json"))
 	public ResponseEntity<?> updateAcomodacao(@RequestBody AcomodacaoDto acomodacaoDto, @PathVariable Integer usuarioId,
 			@PathVariable Integer acomodacaoId) {
 		return acomodacaoService.editar(acomodacaoDto, usuarioId, acomodacaoId);
@@ -79,7 +81,7 @@ public class AcomodacaoController {
 
 	@PutMapping("/acomodacoes/{acomodacaoId}/{habilitado}")
 	@Operation(summary = "Habilita ou desabilita uma acomodação", description = "Com acomodacaoId  e habilitado(boolean) como parâmetros, atualiza  no banco de dados o campo 'habilitado' da acomodação com o id definido no parâmetro.")
-	@ApiResponse(responseCode = "201", description = "O campo habilitado da acomodação atualizado com sucesso.",
+	@ApiResponse(responseCode = "200", description = "O campo habilitado da acomodação atualizado com sucesso.",
 		    content = @Content(mediaType = "application/json"))
 	@ApiResponse(responseCode = "404", description = "Acomodação com ID 'acomodacaoId' não encontrado.",
 		    content = @Content(mediaType = "application/json"))

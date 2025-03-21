@@ -99,7 +99,7 @@ public class ClienteServiceImpl implements ClienteService {
 		cliente.setCpf(cpf);
 		cliente.setFuncionario(funcionario);
 		clienteRepository.save(cliente);
-		return ResponseEntity.status(HttpStatus.CREATED).body("Cliente atualizado com sucesso.");
+		return ResponseEntity.status(HttpStatus.OK).body("Cliente atualizado com sucesso.");
 
 	}
 

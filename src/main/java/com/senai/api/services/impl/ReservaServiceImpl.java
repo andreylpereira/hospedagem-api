@@ -139,7 +139,7 @@ public class ReservaServiceImpl implements ReservaService {
 		reserva.setAcomodacao(acomodacao);
 		reservaRepository.save(reserva);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body("Reserva atualizada com sucesso.");
+		return ResponseEntity.status(HttpStatus.OK).body("Reserva atualizada com sucesso.");
 	}
 
 	// Localiza uma reserva pelo ID
