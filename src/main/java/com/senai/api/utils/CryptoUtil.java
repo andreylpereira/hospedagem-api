@@ -1,21 +1,33 @@
 package com.senai.api.utils;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
 
-public class HashUtil {
+public class CryptoUtil {
 
-    public static String hashCpf(String cpf) throws NoSuchAlgorithmException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] hash = digest.digest(cpf.getBytes());
-        StringBuilder hexString = new StringBuilder();
+	public static SecretKey getFixedSecretKey() {
+		byte[] keyBytes = new byte[] { (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xAB,
+				(byte) 0xCD, (byte) 0xEF, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9A, (byte) 0xBC,
+				(byte) 0xDE, (byte) 0xF0 };
+		return new SecretKeySpec(keyBytes, "AES");
+	}
 
-        for (byte b : hash) {
-            String hex = Integer.toHexString(0xff & b);
-            if (hex.length() == 1) hexString.append('0');
-            hexString.append(hex);
-        }
-        return hexString.toString();
-    }
+	public static String encryptCPF(String cpf, SecretKey key) throws Exception {
+		Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+		cipher.init(Cipher.ENCRYPT_MODE, key);
+
+		byte[] encryptedBytes = cipher.doFinal(cpf.getBytes());
+		return Base64.getEncoder().encodeToString(encryptedBytes);
+	}
+
+	public static String decryptCPF(String encryptedData, SecretKey key) throws Exception {
+		Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+		cipher.init(Cipher.DECRYPT_MODE, key);
+
+		byte[] decodedData = Base64.getDecoder().decode(encryptedData);
+		byte[] decryptedBytes = cipher.doFinal(decodedData);
+		return new String(decryptedBytes);
+	}
 }
-

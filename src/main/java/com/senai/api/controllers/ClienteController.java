@@ -46,7 +46,7 @@ public class ClienteController {
     content = @Content(mediaType = "application/json"))
 	@ApiResponse(responseCode = "409", description = "Funcionário não existe.",
     content = @Content(mediaType = "application/json"))
-	public ResponseEntity<?> insertCliente(@RequestBody ClienteDto clienteDto, @PathVariable Integer usuarioId) {
+	public ResponseEntity<?> insertCliente(@RequestBody ClienteDto clienteDto, @PathVariable Integer usuarioId) throws Exception {
 		return clienteService.cadastrar(clienteDto, usuarioId);
 	}
 	
@@ -61,7 +61,7 @@ public class ClienteController {
 	@ApiResponse(responseCode = "409", description = "Funcionário não cadastrado no sistema.",
     content = @Content(mediaType = "application/json"))
 	public ResponseEntity<?> updateCliente(@RequestBody ClienteDto clienteDto, @PathVariable Integer usuarioId,
-			@PathVariable Integer clienteId) {
+			@PathVariable Integer clienteId) throws Exception {
 		return clienteService.editar(clienteDto, usuarioId, clienteId);
 	}
 

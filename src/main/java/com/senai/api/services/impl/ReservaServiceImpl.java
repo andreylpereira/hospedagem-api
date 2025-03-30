@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.senai.api.dto.ReservaDto;
+import com.senai.api.enums.Status;
 import com.senai.api.models.Acomodacao;
 import com.senai.api.models.Cliente;
 import com.senai.api.models.Reserva;
@@ -207,64 +208,73 @@ public class ReservaServiceImpl implements ReservaService {
 	}
 
 	/*
-	 * Verificador de disponibilidade para o cadastro, verifica se o periodo esta
-	 * ocupado, comparando o que trás do banco com os LocalDateTime da requisição.
+	 * Verificador de disponibilidade para o reservar, com as datas que se deseja reservar,
+	 * é verificado se ha conflito com as datas já reservadas e que não têm status de concluido ou cancelado. 
+	 * Caso haver esses status é considerado que as datas estão disponiveis para reserva.
+	 * A comparação é feito com todas as reservas dá acomodação.
 	 */
 	@Override
 	public Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim) {
 
-		List<Reserva> reservasAcomodacao = reservaRepository.findAllByAcomodacaoId(acomodacaoId);
+	    List<Reserva> reservasAcomodacao = reservaRepository.findAllByAcomodacaoId(acomodacaoId);
 
-		for (Reserva reserva : reservasAcomodacao) {
-			LocalDateTime reservaInicio = reserva.getDataInicio();
-			LocalDateTime reservaFim = reserva.getDataFim();
+	    for (Reserva reserva : reservasAcomodacao) {
+	        LocalDateTime reservaInicio = reserva.getDataInicio();
+	        LocalDateTime reservaFim = reserva.getDataFim();
 
-			LocalDateTime dataAtual = dataInicio;
-			while (!dataAtual.isAfter(dataFim)) {
-				if ((dataAtual.isEqual(reservaInicio) || dataAtual.isAfter(reservaInicio))
-						&& (dataAtual.isEqual(reservaFim) || dataAtual.isBefore(reservaFim))) {
+	        if (reserva.getStatus() != Status.CONCLUIDO && reserva.getStatus() != Status.CANCELADO) {
+	            LocalDateTime dataAtual = dataInicio;
+	            while (!dataAtual.isAfter(dataFim)) {
+	
+	                if ((dataAtual.isEqual(reservaInicio) || dataAtual.isAfter(reservaInicio))
+	                        && (dataAtual.isEqual(reservaFim) || dataAtual.isBefore(reservaFim))) {
+	                    return false; 
+	                }
+	                dataAtual = dataAtual.plusDays(1);
+	            }
+	        }
+	    }
 
-					return false;
-				}
-
-				dataAtual = dataAtual.plusDays(1);
-			}
-		}
-
-		return true;
+	    return true; 
 	}
 
+
 	/*
-	 * Verificador de disponibilidade para o editar, verifica se o periodo esta
-	 * ocupado, comparando o que trás do banco com os LocalDateTime da requisição.
-	 * Ele ignora os dados da reserva que está sendo editada/atualizada.
+	 * Verificador de disponibilidade para o editar, com as datas que se deseja reservar,
+	 * é verificado se ha conflito com as datas já reservadas e que não têm status de concluido ou cancelado. 
+	 * Caso haver esses status é considerado que as datas estão disponiveis para reserva.
+	 * A comparação é feito com todas as reservas dá acomodação, ela ignora a reservaAtual(A que está sendo editada),
+	 * com isso o período da reserva (que esta sendo editada) também fica disponivel.
 	 */
 	@Override
 	public Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim,
-			Integer reservaId) {
+	        Integer reservaId) {
 
-		List<Reserva> reservasAcomodacao = reservaRepository.findAllByAcomodacaoId(acomodacaoId);
-		Reserva reservaAtual = reservaRepository.getReferenceById(reservaId);
-		reservasAcomodacao.remove(reservaAtual);
-		System.out.println("ID: " + reservaAtual);
-		for (Reserva reserva : reservasAcomodacao) {
-			System.out.println("ID: " + reserva.getId());
-			LocalDateTime reservaInicio = reserva.getDataInicio();
-			LocalDateTime reservaFim = reserva.getDataFim();
+	    List<Reserva> reservasAcomodacao = reservaRepository.findAllByAcomodacaoId(acomodacaoId);
+	    
+	    Reserva reservaAtual = reservaRepository.getReferenceById(reservaId);
 
-			LocalDateTime dataAtual = dataInicio;
-			while (!dataAtual.isAfter(dataFim)) {
-				if ((dataAtual.isEqual(reservaInicio) || dataAtual.isAfter(reservaInicio))
-						&& (dataAtual.isEqual(reservaFim) || dataAtual.isBefore(reservaFim))) {
+	    reservasAcomodacao.remove(reservaAtual);
 
-					return false;
-				}
+	    for (Reserva reserva : reservasAcomodacao) {
+	        LocalDateTime reservaInicio = reserva.getDataInicio();
+	        LocalDateTime reservaFim = reserva.getDataFim();
 
-				dataAtual = dataAtual.plusDays(1);
-			}
-		}
+	        if (reserva.getStatus() != Status.CONCLUIDO && reserva.getStatus() != Status.CANCELADO) {
+	            LocalDateTime dataAtual = dataInicio;
+	            while (!dataAtual.isAfter(dataFim)) {
+	 
+	                if ((dataAtual.isEqual(reservaInicio) || dataAtual.isAfter(reservaInicio))
+	                        && (dataAtual.isEqual(reservaFim) || dataAtual.isBefore(reservaFim))) {
+	                    return false; 
+	                }
+	                dataAtual = dataAtual.plusDays(1);
+	            }
+	        }
+	    }
 
-		return true;
+	    return true; 
 	}
+
 
 }

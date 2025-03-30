@@ -1,6 +1,5 @@
 package com.senai.api.controllers;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +62,7 @@ public class UsuarioController {
 		    content = @Content(mediaType = "application/json"))
 	@ApiResponse(responseCode = "409", description = "O CPF fornecido é inválido.",
     content = @Content(mediaType = "application/json"))
-	public ResponseEntity<?> insertUsuario(@RequestBody UsuarioDto usuarioDto) throws NoSuchAlgorithmException {
+	public ResponseEntity<?> insertUsuario(@RequestBody UsuarioDto usuarioDto) throws Exception {
 		return usuarioService.cadastrar(usuarioDto);
 	}
 
@@ -74,7 +73,7 @@ public class UsuarioController {
 	@ApiResponse(responseCode = "404", description = "Os dados estão incompletos.",
 		    content = @Content(mediaType = "application/json"))
 	public ResponseEntity<?> editUsuario(@RequestBody UsuarioDto usuarioDto, @PathVariable Integer usuarioId)
-			throws NoSuchAlgorithmException {
+			throws Exception {
 		return usuarioService.editar(usuarioDto, usuarioId);
 	}
 

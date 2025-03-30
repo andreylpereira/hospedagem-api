@@ -12,7 +12,7 @@ import com.senai.api.models.Usuario;
 @Service
 public interface UsuarioService {
 
-	ResponseEntity<?> cadastrar(UsuarioDto usuarioDto) throws NoSuchAlgorithmException;
+	ResponseEntity<?> cadastrar(UsuarioDto usuarioDto) throws NoSuchAlgorithmException, Exception;
 
 	String formatCpf(String cpf);
 
@@ -22,7 +22,7 @@ public interface UsuarioService {
 
 	Boolean verificarCpfExistente(String cpf) throws Exception;
 
-	ResponseEntity<?> editar(UsuarioDto usuarioDto, Integer usuarioId) throws NoSuchAlgorithmException;
+	ResponseEntity<?> editar(UsuarioDto usuarioDto, Integer usuarioId) throws NoSuchAlgorithmException, Exception;
 
 	ResponseEntity<?> editarSenha(String senha, Integer usuarioId);
 

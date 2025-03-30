@@ -1,6 +1,7 @@
 package com.senai.api.controllers;
 
-import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,17 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.senai.api.dto.AuthDto;
 import com.senai.api.dto.AuthResponseDto;
-import com.senai.api.models.Usuario;
+
 import com.senai.api.repository.UsuarioRepository;
 import com.senai.api.security.JWTGenerator;
-import com.senai.api.security.SecurityConfig;
+
 import com.senai.api.services.UsuarioService;
-import com.senai.api.utils.HashUtil;
+import com.senai.api.utils.CryptoUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -57,10 +57,10 @@ public class AuthController {
 	@ApiResponse(responseCode = "202", description = "Usuário autenticado com sucesso.")
 	@ApiResponse(responseCode = "401", description = "Usuário não autorizado.",
 		    content = @Content(mediaType = "application/json"))
-	public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid AuthDto authDto) throws NoSuchAlgorithmException {
-
+	public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid AuthDto authDto) throws Exception {
+		SecretKey key = CryptoUtil.getFixedSecretKey();
 		String cpf = usuarioService.formatCpf(authDto.getCpf());
-		String cpfCriptografado = HashUtil.hashCpf(cpf);
+		String cpfCriptografado = CryptoUtil.encryptCPF(cpf, key);
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(cpfCriptografado, authDto.getSenha()));
 		SecurityContextHolder.getContext().setAuthentication(authentication);

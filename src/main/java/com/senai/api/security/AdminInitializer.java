@@ -1,5 +1,7 @@
 package com.senai.api.security;
 
+import javax.crypto.SecretKey;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -9,7 +11,7 @@ import com.senai.api.enums.Perfil;
 import com.senai.api.models.Usuario;
 import com.senai.api.repository.UsuarioRepository;
 import com.senai.api.services.UsuarioService;
-import com.senai.api.utils.HashUtil;
+import com.senai.api.utils.CryptoUtil;
 
 // Esse componente verificar se o primeiro administrador foi cadastrado, caso não, efetua o cadastro. A criação do primeiro admin serve para ter um ponto de inicio para a aplicação.
 @Component
@@ -33,7 +35,8 @@ public class AdminInitializer implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		String cpfCriptografado = HashUtil.hashCpf(cpf);
+		SecretKey key = CryptoUtil.getFixedSecretKey();
+		String cpfCriptografado = CryptoUtil.encryptCPF(cpf, key);
 
 		if (!usuarioService.verificarCpfExistente(cpf)) {
 			Usuario admin = new Usuario();

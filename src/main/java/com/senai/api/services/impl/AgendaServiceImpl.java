@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.senai.api.dto.AgendaDto;
 import com.senai.api.dto.AgendaMensalDto;
 import com.senai.api.dto.ReservaDto;
+import com.senai.api.enums.Status;
 import com.senai.api.models.Acomodacao;
 import com.senai.api.models.Cliente;
 import com.senai.api.models.Usuario;
@@ -46,63 +47,73 @@ public class AgendaServiceImpl implements AgendaService {
 	*  Agenda utilizada para apresentar dias ocupados daquele mês, naquela acomodação no input Calendar.
 	*/
 	public List<AgendaDto> gerarCalendarioMensal(LocalDateTime mes, Integer acomodacaoId) {
-		List<AgendaDto> agenda = new ArrayList<>();
-		Map<LocalDate, Boolean> disponibilidade = new HashMap<>();
-		Map<LocalDate, Integer> reservaPorDia = new HashMap<>();
+	    List<AgendaDto> agenda = new ArrayList<>();
+	    Map<LocalDate, Boolean> disponibilidade = new HashMap<>();
+	    Map<LocalDate, Integer> reservaPorDia = new HashMap<>();
 
-		List<ReservaDto> reservas = reservaService.listarReservas();
+	    List<ReservaDto> reservas = reservaService.listarReservas();
 
-		LocalDate primeiroDiaDoMesAtual = mes.toLocalDate().withDayOfMonth(1);
-		LocalDate ultimoDiaDoMesAtual = mes.toLocalDate().withDayOfMonth(mes.toLocalDate().lengthOfMonth());
-		LocalDate primeiroDiaDoMesAnterior = primeiroDiaDoMesAtual.minusMonths(1);
-		@SuppressWarnings("unused")
-		LocalDate ultimoDiaDoMesAnterior = primeiroDiaDoMesAtual.minusDays(1);
+	    LocalDate primeiroDiaDoMesAtual = mes.toLocalDate().withDayOfMonth(1);
+	    LocalDate ultimoDiaDoMesAtual = mes.toLocalDate().withDayOfMonth(mes.toLocalDate().lengthOfMonth());
+	    LocalDate primeiroDiaDoMesAnterior = primeiroDiaDoMesAtual.minusMonths(1);
+	    @SuppressWarnings("unused")
+	    LocalDate ultimoDiaDoMesAnterior = primeiroDiaDoMesAtual.minusDays(1);
 
-		LocalDate dataInicial = primeiroDiaDoMesAnterior;
-		LocalDate dataFinal = ultimoDiaDoMesAtual;
-		for (LocalDate data = dataInicial; !data.isAfter(dataFinal); data = data.plusDays(1)) {
-			disponibilidade.put(data, false);
-		}
+	    LocalDate dataInicial = primeiroDiaDoMesAnterior;
+	    LocalDate dataFinal = ultimoDiaDoMesAtual;
+	    for (LocalDate data = dataInicial; !data.isAfter(dataFinal); data = data.plusDays(1)) {
+	        disponibilidade.put(data, false);
+	    }
 
-		for (ReservaDto reserva : reservas) {
-			if (!reserva.getAcomodacaoId().equals(acomodacaoId)) {
-				continue;
-			}
+	    for (ReservaDto reserva : reservas) {
+	        if (!reserva.getAcomodacaoId().equals(acomodacaoId)) {
+	            continue;
+	        }
 
-			LocalDateTime entrada = reserva.getDataInicio();
-			LocalDateTime saida = reserva.getDataFim();
+	        LocalDateTime entrada = reserva.getDataInicio();
+	        LocalDateTime saida = reserva.getDataFim();
 
-			LocalDate entradaDia = entrada.toLocalDate();
-			LocalDate saidaDia = saida.toLocalDate();
+	        LocalDate entradaDia = entrada.toLocalDate();
+	        LocalDate saidaDia = saida.toLocalDate();
 
-			if (saidaDia.isAfter(ultimoDiaDoMesAtual)) {
-				saidaDia = ultimoDiaDoMesAtual;
-			}
+	        if (saidaDia.isAfter(ultimoDiaDoMesAtual)) {
+	            saidaDia = ultimoDiaDoMesAtual;
+	        }
 
-			if (entradaDia.isBefore(primeiroDiaDoMesAtual)) {
-				entradaDia = primeiroDiaDoMesAtual;
-			}
+	        if (entradaDia.isBefore(primeiroDiaDoMesAtual)) {
+	            entradaDia = primeiroDiaDoMesAtual;
+	        }
 
-			for (LocalDate data = entradaDia; !data.isAfter(saidaDia); data = data.plusDays(1)) {
-				if (!data.isBefore(primeiroDiaDoMesAnterior) && !data.isAfter(ultimoDiaDoMesAtual)) {
-					disponibilidade.put(data, true);
-					reservaPorDia.put(data, reserva.getId());
-				}
-			}
-		}
+	        boolean isReservaAtiva = (reserva.getStatus() != Status.CONCLUIDO && reserva.getStatus() != Status.CANCELADO);
 
-		for (LocalDate data = primeiroDiaDoMesAtual; !data.isAfter(ultimoDiaDoMesAtual); data = data.plusDays(1)) {
-			boolean ocupado = disponibilidade.getOrDefault(data, false);
-			Integer reservaId = ocupado ? reservaPorDia.get(data) : null;
-			LocalDateTime dataCompleta = data.atStartOfDay();
-			agenda.add(new AgendaDto(dataCompleta, ocupado, reservaId));
-		}
-		return agenda;
+	        for (LocalDate data = entradaDia; !data.isAfter(saidaDia); data = data.plusDays(1)) {
+	            if (!data.isBefore(primeiroDiaDoMesAnterior) && !data.isAfter(ultimoDiaDoMesAtual)) {
+
+	                disponibilidade.put(data, isReservaAtiva);
+	                if (isReservaAtiva) {
+	                    reservaPorDia.put(data, reserva.getId());
+	                } else {
+	                    reservaPorDia.put(data, null);
+	                }
+	            }
+	        }
+	    }
+
+	    for (LocalDate data = primeiroDiaDoMesAtual; !data.isAfter(ultimoDiaDoMesAtual); data = data.plusDays(1)) {
+	        boolean ocupado = disponibilidade.getOrDefault(data, false);
+	        Integer reservaId = ocupado ? reservaPorDia.get(data) : null;
+	        LocalDateTime dataCompleta = data.atStartOfDay();
+	        agenda.add(new AgendaDto(dataCompleta, ocupado, reservaId));
+	    }
+	    return agenda;
 	}
 
+
 	
 	
-	
+	/*
+	 * Gera a agenda mensal de cada acomodação. 
+	 */
 	public List<AgendaMensalDto> gerarAgendaMensal(LocalDateTime mes, Integer acomodacaoId) {
 	    List<AgendaMensalDto> agenda = new ArrayList<>();
 	    Set<Integer> reservasAdicionadas = new HashSet<>();
@@ -168,7 +179,7 @@ public class AgendaServiceImpl implements AgendaService {
 	}
 
 	/*
-	 * Gera a agenda diaria para apresentar no painel de temp oreal
+	 * Gera a agenda diaria para apresentar no painel de tempo real
 	 * */
 	public List<AgendaMensalDto> gerarAgendaTempoReal(LocalDateTime dia) { 
 	    List<AgendaMensalDto> agenda = new ArrayList<>(); 

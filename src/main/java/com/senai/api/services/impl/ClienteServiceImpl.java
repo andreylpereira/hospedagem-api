@@ -2,6 +2,8 @@ package com.senai.api.services.impl;
 
 import java.util.List;
 
+import javax.crypto.SecretKey;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,9 @@ import com.senai.api.repository.ClienteRepository;
 import com.senai.api.repository.UsuarioRepository;
 import com.senai.api.services.ClienteService;
 import com.senai.api.services.UsuarioService;
+import com.senai.api.utils.CryptoUtil;
+
+import ch.qos.logback.core.net.SyslogOutputStream;
 
 @Service
 public class ClienteServiceImpl implements ClienteService {
@@ -21,6 +26,7 @@ public class ClienteServiceImpl implements ClienteService {
 	private ClienteRepository clienteRepository;
 	private UsuarioService usuarioService;
 	private UsuarioRepository usuarioRepository;
+	SecretKey key = CryptoUtil.getFixedSecretKey();
 
 	@Autowired
 	public ClienteServiceImpl(ClienteRepository clienteRepository, UsuarioService usuarioService,
@@ -30,12 +36,12 @@ public class ClienteServiceImpl implements ClienteService {
 		this.usuarioRepository = usuarioRepository;
 	}
 
-	
 	/*
-	 * Verifica todos os dados do payload da requisição por condicional e cadastra o cliente.
-	 * */
+	 * Verifica todos os dados do payload da requisição por condicional e cadastra o
+	 * cliente.
+	 */
 	@Override
-	public ResponseEntity<?> cadastrar(ClienteDto clienteDto, Integer usuarioId) {
+	public ResponseEntity<?> cadastrar(ClienteDto clienteDto, Integer usuarioId) throws Exception {
 
 		if (clienteDto == null || clienteDto.getCpf().trim().length() == 0 || clienteDto.getEmail().trim().length() == 0
 				|| clienteDto.getEndereco().trim().length() == 0 || clienteDto.getNome().trim().length() == 0
@@ -45,9 +51,10 @@ public class ClienteServiceImpl implements ClienteService {
 		}
 
 		String cpf = usuarioService.formatCpf(clienteDto.getCpf());
+		Boolean isValid = usuarioService.validCpf(cpf);
+		String cpfCriptografado = CryptoUtil.encryptCPF(cpf, key);
 		Boolean isUser = usuarioRepository.findById(usuarioId).isPresent();
 		Boolean isExists = clienteRepository.existsByCpf(cpf);
-		Boolean isValid = usuarioService.validCpf(cpf);
 
 		if (!isValid) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Cliente com o CPF inválido.");
@@ -59,21 +66,20 @@ public class ClienteServiceImpl implements ClienteService {
 		Usuario funcionario = usuarioRepository.getReferenceById(usuarioId);
 		Cliente cliente = new Cliente();
 		BeanUtils.copyProperties(clienteDto, cliente);
-		cliente.setCpf(cpf);
+		cliente.setCpf(cpfCriptografado);
 		cliente.setFuncionario(funcionario);
 		clienteRepository.save(cliente);
 		return ResponseEntity.status(HttpStatus.CREATED).body("Cliente cadastrado com sucesso.");
 
 	}
 
-	
-	
 	/*
-	 * Verifica todos os dados do payload da requisição por condicional, como também o que retorna de cliente do banco de dados,
-	 * posteriormente atualiza o cliente.
-	 * */
+	 * Verifica todos os dados do payload da requisição por condicional, como também
+	 * o que retorna de cliente do banco de dados, posteriormente atualiza o
+	 * cliente.
+	 */
 	@Override
-	public ResponseEntity<?> editar(ClienteDto clienteDto, Integer usuarioId, Integer clienteId) {
+	public ResponseEntity<?> editar(ClienteDto clienteDto, Integer usuarioId, Integer clienteId) throws Exception {
 
 		if (clienteDto == null || clienteDto.getCpf().trim().length() == 0 || clienteDto.getEmail().trim().length() == 0
 				|| clienteDto.getEndereco().trim().length() == 0 || clienteDto.getNome().trim().length() == 0
@@ -92,11 +98,12 @@ public class ClienteServiceImpl implements ClienteService {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Funcionário não cadastrado no sistema.");
 		}
 
+		String cpfCriptografado = CryptoUtil.encryptCPF(cpf, key);
 		Cliente cliente = new Cliente();
 		Usuario funcionario = usuarioRepository.getReferenceById(usuarioId);
 		BeanUtils.copyProperties(clienteDto, cliente);
 		cliente.setId(clienteId);
-		cliente.setCpf(cpf);
+		cliente.setCpf(cpfCriptografado);
 		cliente.setFuncionario(funcionario);
 		clienteRepository.save(cliente);
 		return ResponseEntity.status(HttpStatus.OK).body("Cliente atualizado com sucesso.");
@@ -107,10 +114,18 @@ public class ClienteServiceImpl implements ClienteService {
 	public ResponseEntity<List<Cliente>> recuperarClientes() {
 		try {
 			List<Cliente> clientes = clienteRepository.findAll();
+			clientes.forEach(cliente -> {
+				try {
+					String cpfDecriptografado = CryptoUtil.decryptCPF(cliente.getCpf(), key);
+					cliente.setCpf(cpfDecriptografado);
+	
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
 			return ResponseEntity.status(HttpStatus.OK).body(clientes);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(null);	
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 
@@ -118,10 +133,11 @@ public class ClienteServiceImpl implements ClienteService {
 	public ResponseEntity<Cliente> recuperarCliente(Integer clienteId) {
 		try {
 			Cliente cliente = clienteRepository.getReferenceById(clienteId);
+			String cpfDecriptografado = CryptoUtil.decryptCPF(cliente.getCpf(), key);
+			cliente.setCpf(cpfDecriptografado);
 			return ResponseEntity.status(HttpStatus.OK).body(cliente);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(null);	
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 

@@ -1,8 +1,9 @@
 package com.senai.api.services.impl;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.InputMismatchException;
 import java.util.List;
+
+import javax.crypto.SecretKey;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +17,14 @@ import com.senai.api.dto.UsuarioDto;
 import com.senai.api.models.Usuario;
 import com.senai.api.repository.UsuarioRepository;
 import com.senai.api.services.UsuarioService;
-import com.senai.api.utils.HashUtil;
+import com.senai.api.utils.CryptoUtil;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 
 	private UsuarioRepository usuarioRepository;
 	private PasswordEncoder passwordEncoder;
+	SecretKey key = CryptoUtil.getFixedSecretKey();
 
 	@Autowired
 	public UsuarioServiceImpl(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
@@ -35,10 +37,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 	 * se já não foi cadastrado, o mesmo é criptografado por meio de Hash e a senha por meio do bcrypt.
 	 * */
 	@Override
-	public ResponseEntity<?> cadastrar(UsuarioDto usuarioDto) throws NoSuchAlgorithmException {
+	public ResponseEntity<?> cadastrar(UsuarioDto usuarioDto) throws Exception {
 
 		String cpf = formatCpf(usuarioDto.getCpf());
-		String cpfCriptografado = HashUtil.hashCpf(cpf);
+		String cpfCriptografado = CryptoUtil.encryptCPF(cpf, key);
 		Boolean isAvaible = usuarioRepository.findByCpf(cpfCriptografado).isEmpty();
 
 		if (!validCpf(cpf)) {
@@ -64,14 +66,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 	 * e atualiza os dados, incluindo a utilizada do HASH e do bcrypt.
 	 * */
 	@Override
-	public ResponseEntity<?> editar(UsuarioDto usuarioDto, Integer usuarioId) throws NoSuchAlgorithmException {
+	public ResponseEntity<?> editar(UsuarioDto usuarioDto, Integer usuarioId) throws Exception {
 
 		boolean isExists = usuarioRepository.existsById(usuarioId);
 
 		if (isExists) {
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.getSenha());
 			String cpf = formatCpf(usuarioDto.getCpf());
-			String cpfCriptografado = HashUtil.hashCpf(cpf);
+			String cpfCriptografado = CryptoUtil.encryptCPF(cpf, key);
 			Usuario usuario = new Usuario();
 
 			BeanUtils.copyProperties(usuarioDto, usuario);
@@ -111,8 +113,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public Boolean verificarCpfExistente(String cpf) throws Exception {
-		String cpfHash = HashUtil.hashCpf(cpf);
-		return usuarioRepository.findByCpf(cpfHash).isPresent();
+		String cpfCriptografado = CryptoUtil.encryptCPF(cpf, key);
+		return usuarioRepository.findByCpf(cpfCriptografado).isPresent();
 	}
 
 	@Override

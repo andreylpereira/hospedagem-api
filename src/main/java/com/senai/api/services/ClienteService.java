@@ -11,9 +11,9 @@ import com.senai.api.models.Cliente;
 @Service
 public interface ClienteService {
 
-	ResponseEntity<?> cadastrar(ClienteDto clienteDto, Integer usuarioId);
+	ResponseEntity<?> cadastrar(ClienteDto clienteDto, Integer usuarioId) throws Exception;
 
-	ResponseEntity<?> editar(ClienteDto clienteDto, Integer usuarioId, Integer clienteId);
+	ResponseEntity<?> editar(ClienteDto clienteDto, Integer usuarioId, Integer clienteId)throws Exception;
 
 	ResponseEntity<List<Cliente>> recuperarClientes();
 
