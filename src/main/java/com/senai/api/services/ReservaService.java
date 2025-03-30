@@ -19,8 +19,9 @@ public interface ReservaService {
 
 	ReservaDto reservaById(Integer reservaId);
 
-	ResponseEntity<?> editarStatus(Integer reservaId, String status);
-
 	Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim);
+
+	Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim,
+			Integer reservaId);
 
 }

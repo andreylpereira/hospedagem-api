@@ -1,8 +1,9 @@
 package com.senai.api.services.impl;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.InputMismatchException;
 import java.util.List;
+
+import javax.crypto.SecretKey;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +17,14 @@ import com.senai.api.dto.UsuarioDto;
 import com.senai.api.models.Usuario;
 import com.senai.api.repository.UsuarioRepository;
 import com.senai.api.services.UsuarioService;
-import com.senai.api.utils.HashUtil;
+import com.senai.api.utils.CryptoUtil;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 
 	private UsuarioRepository usuarioRepository;
 	private PasswordEncoder passwordEncoder;
+	SecretKey key = CryptoUtil.getFixedSecretKey();
 
 	@Autowired
 	public UsuarioServiceImpl(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
@@ -35,10 +37,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 	 * se já não foi cadastrado, o mesmo é criptografado por meio de Hash e a senha por meio do bcrypt.
 	 * */
 	@Override
-	public ResponseEntity<?> cadastrar(UsuarioDto usuarioDto) throws NoSuchAlgorithmException {
+	public ResponseEntity<?> cadastrar(UsuarioDto usuarioDto) throws Exception {
 
 		String cpf = formatCpf(usuarioDto.getCpf());
-		String cpfCriptografado = HashUtil.hashCpf(cpf);
+		String cpfCriptografado = CryptoUtil.encryptCPF(cpf, key);
 		Boolean isAvaible = usuarioRepository.findByCpf(cpfCriptografado).isEmpty();
 
 		if (!validCpf(cpf)) {
@@ -55,7 +57,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 			return ResponseEntity.status(HttpStatus.CREATED).body("Usuário cadastrado com sucesso.");
 
 		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não foi possivel criar.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não foi possivel cadastrar usuário.");
 		}
 	}
 
@@ -64,14 +66,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 	 * e atualiza os dados, incluindo a utilizada do HASH e do bcrypt.
 	 * */
 	@Override
-	public ResponseEntity<?> editar(UsuarioDto usuarioDto, Integer usuarioId) throws NoSuchAlgorithmException {
+	public ResponseEntity<?> editar(UsuarioDto usuarioDto, Integer usuarioId) throws Exception {
 
 		boolean isExists = usuarioRepository.existsById(usuarioId);
 
 		if (isExists) {
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.getSenha());
 			String cpf = formatCpf(usuarioDto.getCpf());
-			String cpfCriptografado = HashUtil.hashCpf(cpf);
+			String cpfCriptografado = CryptoUtil.encryptCPF(cpf, key);
 			Usuario usuario = new Usuario();
 
 			BeanUtils.copyProperties(usuarioDto, usuario);
@@ -80,7 +82,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 			usuario.setId(usuarioId);
 			usuarioRepository.save(usuario);
 
-			return ResponseEntity.status(HttpStatus.CREATED).body("Usuário atualizado com sucesso.");
+			return ResponseEntity.status(HttpStatus.OK).body("Usuário atualizado com sucesso.");
 
 		}
 
@@ -91,9 +93,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 	 * Atualiza a senha, verifica se não está vazio o dado do payload, se o usuário existe e aplica o bcrypt antes de inserir no banco.
 	 * */
 	@Override
-	public ResponseEntity<?> editarSenha(UsuarioDto usuarioDto, Integer usuarioId) {
+	public ResponseEntity<?> editarSenha(String senha, Integer usuarioId) {
 
-		Boolean isEmpty = usuarioDto.getSenha().trim().length() == 0;
+		Boolean isEmpty = senha.trim().length() == 0;
 		if (isEmpty) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("A senha fornecida é inválida.");
 		}
@@ -101,18 +103,18 @@ public class UsuarioServiceImpl implements UsuarioService {
 		Usuario usuario = usuarioRepository.getReferenceById(usuarioId);
 			
 		if (usuario.getId() == usuarioId) {
-			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.getSenha());
+			String senhaCriptografada = new BCryptPasswordEncoder().encode(senha);
 			usuario.setSenha(senhaCriptografada);
 			usuarioRepository.save(usuario);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Senha atualizada com sucesso.");
+			return ResponseEntity.status(HttpStatus.OK).body("Senha atualizada com sucesso.");
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possível atualizar a senha.");
 	}
 
 	@Override
 	public Boolean verificarCpfExistente(String cpf) throws Exception {
-		String cpfHash = HashUtil.hashCpf(cpf);
-		return usuarioRepository.findByCpf(cpfHash).isPresent();
+		String cpfCriptografado = CryptoUtil.encryptCPF(cpf, key);
+		return usuarioRepository.findByCpf(cpfCriptografado).isPresent();
 	}
 
 	@Override
@@ -122,7 +124,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		if (usuario.getId() == usuarioId) {
 			usuario.setHabilitado(habilitado);
 			usuarioRepository.save(usuario);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Senha atualizada com sucesso.");
+			return ResponseEntity.status(HttpStatus.OK).body("Credencial atualizada com sucesso.");
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + usuarioId + " não encontrado.");
 	}
@@ -202,7 +204,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
 	@Override
-	public ResponseEntity<?> recuperarUsuarios() {
+	public ResponseEntity<List<Usuario>> recuperarUsuarios() {
 		try {
 			List<Usuario> usuarios = usuarioRepository.findAll();
 			usuarios.forEach(a -> {
@@ -211,20 +213,22 @@ public class UsuarioServiceImpl implements UsuarioService {
 			});
 			return ResponseEntity.status(HttpStatus.OK).body(usuarios);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+			 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                     .body(null);		
 		}
 	}
 
 	
 	@Override
-	public ResponseEntity<?> recuperarUsuario(Integer usuarioId) {
+	public ResponseEntity<Usuario> recuperarUsuario(Integer usuarioId) {
 		try {
 			Usuario usuario = usuarioRepository.getReferenceById(usuarioId);
 			usuario.setCpf(null);
 			usuario.setSenha(null);
 			return ResponseEntity.status(HttpStatus.OK).body(usuario);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+			 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                     .body(null);	
 		}
 	}
 }

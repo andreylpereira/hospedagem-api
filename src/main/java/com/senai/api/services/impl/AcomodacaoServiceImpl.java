@@ -73,6 +73,8 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 			acomodacao.setCapacidade(acomodacaoDto.getCapacidade());
 			acomodacao.setPreco(acomodacaoDto.getPreco());
 			acomodacao.setHabilitado(acomodacaoDto.isHabilitado());
+			acomodacao.setBase64Image(acomodacaoDto.getBase64Image());
+			acomodacao.setContentType(acomodacaoDto.getContentType());
 
 			Set<Amenidade> amenidades = new HashSet<>();
 			for (Amenidade amenidade : acomodacaoDto.getAmenidades()) {
@@ -87,7 +89,7 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 			acomodacao.setAmenidades(amenidades);
 			acomodacao.setFuncionario(funcionario);
 			acomodacaoRepository.save(acomodacao);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Acomodação atualizada com sucesso.");
+			return ResponseEntity.status(HttpStatus.OK).body("Acomodação atualizada com sucesso.");
 		} else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body("Acomodação com ID " + acomodacaoId + " não encontrada.");
@@ -101,31 +103,33 @@ public class AcomodacaoServiceImpl implements AcomodacaoService {
 		if (acomodacao.getId() == acomodacaoId) {
 			acomodacao.setHabilitado(habilitado);
 			acomodacaoRepository.save(acomodacao);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Estado da acomodação atualizado com sucesso.");
+			return ResponseEntity.status(HttpStatus.OK).body("Estado da acomodação atualizado com sucesso.");
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Acomodação com ID " + acomodacaoId + " não encontrado.");
 	}
 	
 	@Override
-	public ResponseEntity<?> recuperarAcomodacao(Integer acomodacaoId) {
+	public ResponseEntity<Acomodacao> recuperarAcomodacao(Integer acomodacaoId) {
 		try {
 			Acomodacao acomodacao = acomodacaoRepository.getReferenceById(acomodacaoId);
 	
 			acomodacao.setReservas(null);
 			return ResponseEntity.status(HttpStatus.OK).body(acomodacao);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);	
 		}
 	}
 	
 	@Override
-	public ResponseEntity<?> recuperarAcomodacoes() {
+	public ResponseEntity<List<Acomodacao>> recuperarAcomodacoes() {
 		try {
 			List<Acomodacao> acomodacoes = acomodacaoRepository.findAll();
 	
 			return ResponseEntity.status(HttpStatus.OK).body(acomodacoes);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.OK).body("Não foi possível recuperar dados.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);	
 		}
 	}
 }

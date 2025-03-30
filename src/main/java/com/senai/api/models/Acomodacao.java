@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "acomodacoes")
@@ -20,6 +21,11 @@ public class Acomodacao {
 	private int capacidade;
 	private double preco;
 	private boolean habilitado;
+	private String contentType;
+	
+	@Lob
+	@Column(columnDefinition = "LONGTEXT")
+	private String base64Image;
 
 	@OneToMany(mappedBy = "acomodacao", cascade = CascadeType.ALL)
 	private Set<Reserva> reservas;
@@ -37,13 +43,16 @@ public class Acomodacao {
 	}
 
 	public Acomodacao(Integer id, String nome, String descricao, int capacidade, double preco, boolean habilitado,
-			Set<Reserva> reservas, Set<Amenidade> amenidades, Usuario funcionario) {
+			String contentType, String base64Image, Set<Reserva> reservas, Set<Amenidade> amenidades,
+			Usuario funcionario) {
 		this.id = id;
 		this.nome = nome;
 		this.descricao = descricao;
 		this.capacidade = capacidade;
 		this.preco = preco;
 		this.habilitado = habilitado;
+		this.contentType = contentType;
+		this.base64Image = base64Image;
 		this.reservas = reservas;
 		this.amenidades = amenidades;
 		this.funcionario = funcionario;
@@ -95,6 +104,22 @@ public class Acomodacao {
 
 	public void setHabilitado(boolean habilitado) {
 		this.habilitado = habilitado;
+	}
+
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
+
+	public String getBase64Image() {
+		return base64Image;
+	}
+
+	public void setBase64Image(String base64Image) {
+		this.base64Image = base64Image;
 	}
 
 	public Set<Reserva> getReservas() {

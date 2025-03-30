@@ -16,6 +16,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.senai.api.enums.Perfil;
 
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -34,6 +37,7 @@ public class SecurityConfig {
      * Entre os pontos que são acessados por meio de autenticação, apenas o cadastro de usuário SOMENTE o perfil de ADMINISTRADOR é permitido.
      * Os demais pontos, tanto Perfil FUNCIONARIO, como ADMINISTRADOR têm acesso.
      * */
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
@@ -42,6 +46,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() 
                 .requestMatchers("/api/auth/login/**").permitAll() 
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/api/usuario/lista/**").hasAnyAuthority(Perfil.FUNCIONARIO.getDescricao(), Perfil.ADMINISTRADOR.getDescricao())
                 .requestMatchers("/api/usuario/atualizarSenha/**").hasAnyAuthority(Perfil.FUNCIONARIO.getDescricao(), Perfil.ADMINISTRADOR.getDescricao())
                 .requestMatchers("/api/usuario/cadastrarUsuario/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao())

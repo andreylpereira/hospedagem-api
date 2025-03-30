@@ -39,20 +39,19 @@ public class ReservaServiceImpl implements ReservaService {
 	}
 
 	/*
-	 * Valida os dados de entrada da reserva, depois se está disponivel para reserva.
-	 * Caso passar pelas validações efetua a reserva.
-	 * */
+	 * Valida os dados de entrada da reserva, depois se está disponivel para
+	 * reserva. Caso passar pelas validações efetua a reserva.
+	 */
 	@Override
 	public ResponseEntity<?> cadastrar(ReservaDto reservaDto) {
 
-		ResponseEntity<?> validarReserva = validarReservaDto(reservaDto);
+		ResponseEntity<?> validarDatas = validarDatas(reservaDto);
+		if (validarDatas != null) {
+			return validarDatas;
+		}
+		ResponseEntity<?> validarReserva = validarReserva(reservaDto);
 		if (validarReserva != null) {
 			return validarReserva;
-		}
-
-		if (reservaDto.getDataInicio() == null || reservaDto.getDataFim() == null) {
-			return ResponseEntity.status(HttpStatus.CONFLICT)
-					.body("O período de reserva não foi definido corretamente.");
 		}
 
 		Boolean isAvailable = verificarDisponibilidade(reservaDto.getAcomodacaoId(), reservaDto.getDataInicio(),
@@ -86,13 +85,15 @@ public class ReservaServiceImpl implements ReservaService {
 	}
 
 	/*
-	 * Busca uma reserva do banco de dados e verifica se ela existe ou não. Também valida os dados do corpo da requisição.
-	 * Faz também validações comparando o corpo da requisição com a reserva que foi buscada do banco, caso estiver OK, faz atualização/edição no banco.
-	 * */
+	 * Busca uma reserva do banco de dados e verifica se ela existe ou não. Também
+	 * valida os dados do corpo da requisição. Faz também validações comparando o
+	 * corpo da requisição com a reserva que foi buscada do banco, caso estiver OK,
+	 * faz atualização/edição no banco.
+	 */
 	@Override
 	public ResponseEntity<?> editar(ReservaDto reservaDto, Integer reservaId) {
-		Optional<Reserva> reservaExistenteOpt = reservaRepository.findById(reservaId);
 
+		Optional<Reserva> reservaExistenteOpt = reservaRepository.findById(reservaId);
 		if (reservaDto.getDataInicio() == null || reservaDto.getDataFim() == null) {
 			return ResponseEntity.status(HttpStatus.CONFLICT)
 					.body("O período de reserva não foi definido corretamente.");
@@ -102,91 +103,60 @@ public class ReservaServiceImpl implements ReservaService {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reserva não encontrada.");
 		}
 
-		Reserva reservaExistente = reservaExistenteOpt.get();
-
-		ResponseEntity<?> validarReserva = validarReservaDto(reservaDto);
+		ResponseEntity<?> validarDatas = validarDatas(reservaDto);
+		if (validarDatas != null) {
+			return validarDatas;
+		}
+		ResponseEntity<?> validarReserva = validarReserva(reservaDto);
 		if (validarReserva != null) {
 			return validarReserva;
 		}
 
-		boolean isAlterado = false;
-
-		if (!reservaExistente.getStatus().equals(reservaDto.getStatus())) {
-			isAlterado = true;
-			reservaExistente.setStatus(reservaDto.getStatus());
+		Boolean isAvailable = verificarDisponibilidade(reservaDto.getAcomodacaoId(), reservaDto.getDataInicio(),
+				reservaDto.getDataFim(), reservaId);
+		if (!isAvailable) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O período solicitado de reserva está ocupado.");
 		}
 
-			Boolean isAvailable = verificarDisponibilidade(reservaDto.getAcomodacaoId(), reservaDto.getDataInicio(),
-					reservaDto.getDataFim(), reservaId);
-			if (!isAvailable) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-						.body("O período solicitado de reserva está ocupado.");
-			} else {				
-				isAlterado = true;
-				reservaExistente.setDataInicio(reservaDto.getDataInicio());
-				reservaExistente.setDataFim(reservaDto.getDataFim());	
-			}
+		Usuario funcionario = fetchUsuario(reservaDto.getFuncionarioId());
+		Cliente cliente = fetchCliente(reservaDto.getClienteId());
+		Acomodacao acomodacao = fetchAcomodacao(reservaDto.getAcomodacaoId());
 
-
-		if (!reservaExistente.getCliente().getId().equals(reservaDto.getClienteId())) {
-			isAlterado = true;
-			Cliente cliente = fetchCliente(reservaDto.getClienteId());
-			if (cliente == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado.");
-			}
-			reservaExistente.setCliente(cliente);
+		if (funcionario == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário criador não encontrado.");
+		}
+		if (cliente == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado.");
+		}
+		if (acomodacao == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Acomodação não encontrada.");
 		}
 
-		if (!reservaExistente.getAcomodacao().getId().equals(reservaDto.getAcomodacaoId())) {
-			isAlterado = true;
-			Acomodacao acomodacao = fetchAcomodacao(reservaDto.getAcomodacaoId());
-			if (acomodacao == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Acomodação não encontrada.");
-			}
-			reservaExistente.setAcomodacao(acomodacao);
-		}
-
-		if (!reservaExistente.getFuncionario().getId().equals(reservaDto.getFuncionarioId())) {
-			isAlterado = true;
-			Usuario funcionario = fetchUsuario(reservaDto.getFuncionarioId());
-			if (funcionario == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário criador não encontrado.");
-			}
-			reservaExistente.setFuncionario(funcionario);
-		}
-
-		if (!isAlterado) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nenhum dado possível foi alterado.");
-		}
-
-		reservaRepository.save(reservaExistente);
+		Reserva reserva = reservaRepository.getReferenceById(reservaId);
+		BeanUtils.copyProperties(reservaDto, reserva);
+		reserva.setId(reservaId);
+		reserva.setFuncionario(funcionario);
+		reserva.setCliente(cliente);
+		reserva.setAcomodacao(acomodacao);
+		reservaRepository.save(reserva);
 
 		return ResponseEntity.status(HttpStatus.OK).body("Reserva atualizada com sucesso.");
 	}
 
-	//Validador da reserva utilizado no cadastrar/editar
-	private ResponseEntity<?> validarReservaDto(ReservaDto reservaDto) {
-		if (reservaDto.getClienteId() == null || reservaDto.getAcomodacaoId() == null) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados obrigatórios não fornecidos.");
-		}
-		return null;
+	// Localiza uma reserva pelo ID
+	@Override
+	public ReservaDto reservaById(Integer reservaId) {
+		Reserva reserva = reservaRepository.findById(reservaId).orElseThrow();
+
+		Integer responsavelId = reserva.getFuncionario() != null ? reserva.getFuncionario().getId() : null;
+		Integer clienteId = reserva.getCliente() != null ? reserva.getCliente().getId() : null;
+		Integer acomodacaoId = reserva.getAcomodacao() != null ? reserva.getAcomodacao().getId() : null;
+
+		return new ReservaDto(reserva.getId(), responsavelId, clienteId, acomodacaoId, reserva.getDataInicio(),
+				reserva.getDataFim(), reserva.getStatus());
 	}
 
-	/*
-	 * Verificar se os ID's não são nulo, caso contrario retorna o respectivo objeto do banco. 
-	  */
-	private Usuario fetchUsuario(Integer usuarioId) {
-		return usuarioId != null ? usuarioRepository.findById(usuarioId).orElse(null) : null;
-	}
-
-	private Cliente fetchCliente(Integer clienteId) {
-		return clienteId != null ? clienteRepository.findById(clienteId).orElse(null) : null;
-	}
-
-	private Acomodacao fetchAcomodacao(Integer acomodacaoId) {
-		return acomodacaoId != null ? acomodacaoRepository.findById(acomodacaoId).orElse(null) : null;
-	}
-
+	// Lista todas as reservas
 	@Override
 	public List<ReservaDto> listarReservas() {
 		List<Reserva> reservas = reservaRepository.findAll();
@@ -201,86 +171,110 @@ public class ReservaServiceImpl implements ReservaService {
 		}).collect(Collectors.toList());
 	}
 
-	
-	/*
-	 * Método não utilizado, tendo em vista que na regra de negócio a edição do status é feita por meio do editar. 
-	  */
-	@Override
-	public ResponseEntity<?> editarStatus(Integer reservaId, String status) {
-		Optional<Reserva> reservaOpt = reservaRepository.findById(reservaId);
-		if (reservaOpt.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reserva com ID " + reservaId + " não encontrada.");
+	// Validador da reserva utilizado no cadastrar/editar
+	private ResponseEntity<?> validarReserva(ReservaDto reservaDto) {
+		if (reservaDto.getClienteId() == null || reservaDto.getAcomodacaoId() == null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados obrigatórios não fornecidos.");
 		}
-
-		Reserva reserva = reservaOpt.get();
-		Status novoStatus;
-		try {
-			novoStatus = Status.valueOf(status.toUpperCase());
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Perfil inválido.");
-		}
-
-		reserva.setStatus(novoStatus);
-		reservaRepository.save(reserva);
-		return ResponseEntity.status(HttpStatus.OK).body("Status da reserva atualizado com sucesso.");
+		return null;
 	}
 
-	@Override
-	public ReservaDto reservaById(Integer reservaId) {
-		Reserva reserva = reservaRepository.findById(reservaId).orElseThrow();
+	// Valida se as datas não estão ínvalidas
+	private ResponseEntity<?> validarDatas(ReservaDto reservaDto) {
 
-		Integer responsavelId = reserva.getFuncionario() != null ? reserva.getFuncionario().getId() : null;
-		Integer clienteId = reserva.getCliente() != null ? reserva.getCliente().getId() : null;
-		Integer acomodacaoId = reserva.getAcomodacao() != null ? reserva.getAcomodacao().getId() : null;
-
-		return new ReservaDto(reserva.getId(), responsavelId, clienteId, acomodacaoId, reserva.getDataInicio(),
-				reserva.getDataFim(), reserva.getStatus());
+		Boolean isNull = (reservaDto.getDataInicio() == null || reservaDto.getDataFim() == null);
+		Boolean isInvalidInputs = (reservaDto.getDataFim().isBefore(reservaDto.getDataInicio()));
+		if (isNull || isInvalidInputs) {
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+					.body("O período de reserva não foi definido corretamente.");
+		}
+		return null;
 	}
 
-	
-	
 	/*
-	 * Verificador de disponibilidade para o cadastro, verifica se o periodo esta ocupado, comparando o que trás do banco com os LocalDateTime da requisição.
-	 * */
+	 * Verificar se os ID's não são nulo, caso contrario retorna o respectivo objeto
+	 * do banco.
+	 */
+	private Usuario fetchUsuario(Integer usuarioId) {
+		return usuarioId != null ? usuarioRepository.findById(usuarioId).orElse(null) : null;
+	}
+
+	private Cliente fetchCliente(Integer clienteId) {
+		return clienteId != null ? clienteRepository.findById(clienteId).orElse(null) : null;
+	}
+
+	private Acomodacao fetchAcomodacao(Integer acomodacaoId) {
+		return acomodacaoId != null ? acomodacaoRepository.findById(acomodacaoId).orElse(null) : null;
+	}
+
+	/*
+	 * Verificador de disponibilidade para o reservar, com as datas que se deseja reservar,
+	 * é verificado se ha conflito com as datas já reservadas e que não têm status de concluido ou cancelado. 
+	 * Caso haver esses status é considerado que as datas estão disponiveis para reserva.
+	 * A comparação é feito com todas as reservas dá acomodação.
+	 */
 	@Override
 	public Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim) {
 
-		List<Reserva> reservasAcomodacao = reservaRepository.findByAcomodacaoId(acomodacaoId);
-
-		for (Reserva reserva : reservasAcomodacao) {
-			LocalDateTime reservaInicio = reserva.getDataInicio();
-			LocalDateTime reservaFim = reserva.getDataFim();
-
-			if (dataInicio.isBefore(reservaFim) && dataFim.isAfter(reservaInicio)) {
-
-				return false;
-			}
-		}
-
-		return true;
-	}
-	
-	/*
-	 * Verificador de disponibilidade para o editar, verifica se o periodo esta ocupado, comparando o que trás do banco com os LocalDateTime da requisição.
-	 * Ele ignora os dados da reserva que está sendo editada/atualizada.
-	 * */
-	public Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim, Integer reservaId) {
-
-	    List<Reserva> reservasAcomodacao = reservaRepository.findByAcomodacaoId(acomodacaoId);
+	    List<Reserva> reservasAcomodacao = reservaRepository.findAllByAcomodacaoId(acomodacaoId);
 
 	    for (Reserva reserva : reservasAcomodacao) {
 	        LocalDateTime reservaInicio = reserva.getDataInicio();
 	        LocalDateTime reservaFim = reserva.getDataFim();
 
-	     
-	        if (!reserva.getId().equals(reservaId)) {
-	     
-	            if (dataInicio.isBefore(reservaFim) && dataFim.isAfter(reservaInicio)) {
-	                return false;
+	        if (reserva.getStatus() != Status.CONCLUIDO && reserva.getStatus() != Status.CANCELADO) {
+	            LocalDateTime dataAtual = dataInicio;
+	            while (!dataAtual.isAfter(dataFim)) {
+	
+	                if ((dataAtual.isEqual(reservaInicio) || dataAtual.isAfter(reservaInicio))
+	                        && (dataAtual.isEqual(reservaFim) || dataAtual.isBefore(reservaFim))) {
+	                    return false; 
+	                }
+	                dataAtual = dataAtual.plusDays(1);
 	            }
 	        }
 	    }
 
-	    return true;
+	    return true; 
 	}
+
+
+	/*
+	 * Verificador de disponibilidade para o editar, com as datas que se deseja reservar,
+	 * é verificado se ha conflito com as datas já reservadas e que não têm status de concluido ou cancelado. 
+	 * Caso haver esses status é considerado que as datas estão disponiveis para reserva.
+	 * A comparação é feito com todas as reservas dá acomodação, ela ignora a reservaAtual(A que está sendo editada),
+	 * com isso o período da reserva (que esta sendo editada) também fica disponivel.
+	 */
+	@Override
+	public Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim,
+	        Integer reservaId) {
+
+	    List<Reserva> reservasAcomodacao = reservaRepository.findAllByAcomodacaoId(acomodacaoId);
+	    
+	    Reserva reservaAtual = reservaRepository.getReferenceById(reservaId);
+
+	    reservasAcomodacao.remove(reservaAtual);
+
+	    for (Reserva reserva : reservasAcomodacao) {
+	        LocalDateTime reservaInicio = reserva.getDataInicio();
+	        LocalDateTime reservaFim = reserva.getDataFim();
+
+	        if (reserva.getStatus() != Status.CONCLUIDO && reserva.getStatus() != Status.CANCELADO) {
+	            LocalDateTime dataAtual = dataInicio;
+	            while (!dataAtual.isAfter(dataFim)) {
+	 
+	                if ((dataAtual.isEqual(reservaInicio) || dataAtual.isAfter(reservaInicio))
+	                        && (dataAtual.isEqual(reservaFim) || dataAtual.isBefore(reservaFim))) {
+	                    return false; 
+	                }
+	                dataAtual = dataAtual.plusDays(1);
+	            }
+	        }
+	    }
+
+	    return true; 
+	}
+
+
 }
