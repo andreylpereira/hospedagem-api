@@ -27,7 +27,7 @@ public class AdminService {
 	@Value("${admin.senha}")
 	private String senha;
 
-	ResponseEntity<?> initializerAdmin(Usuario usuario) throws Exception {
+	public ResponseEntity<?> initializerAdmin(Usuario usuario) throws Exception {
 
 		SecretKey key = CryptoUtil.getFixedSecretKey();
 		String cpfCriptografado = CryptoUtil.encryptCPF(cpf, key);

@@ -20,7 +20,7 @@ public class AdminController {
 	private AdminService adminService;	
 
 	@PostMapping("/admin")
-	public ResponseEntity<?> admin(@RequestBody Usuario usuario) {
+	public ResponseEntity<?> admin(@RequestBody Usuario usuario) throws Exception {
 		return adminService.initializerAdmin(usuario);
 	}
 }
