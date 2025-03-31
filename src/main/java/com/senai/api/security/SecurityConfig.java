@@ -61,7 +61,7 @@ public class SecurityConfig {
         // Configuração CORS para a porta da aplicação react
         http.cors(cors -> cors.configurationSource(request -> {
             var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-            corsConfig.setAllowedOrigins(java.util.List.of("http://localhost:3000")); 
+            corsConfig.setAllowedOrigins(java.util.List.of("https://hospedagem-frontend.onrender.com")); 
             corsConfig.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); 
             corsConfig.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type")); 
             corsConfig.setAllowCredentials(true); 
