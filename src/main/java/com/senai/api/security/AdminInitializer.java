@@ -8,7 +8,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.senai.api.dto.UsuarioDto;
 import com.senai.api.enums.Perfil;
 import com.senai.api.models.Usuario;
 import com.senai.api.repository.UsuarioRepository;
@@ -41,12 +40,14 @@ public class AdminInitializer implements CommandLineRunner {
 		String cpfCriptografado = CryptoUtil.encryptCPF(cpf, key);
 
 		if (!usuarioService.verificarCpfExistente(cpf)) {
-			UsuarioDto admin = new UsuarioDto();
+			System.out.println("ENTROU");
+			Usuario admin = new Usuario();
 			admin.setCpf(cpfCriptografado);
 			admin.setNome("Admin");
 			admin.setSenha(passwordEncoder.encode(senha));
 			admin.setPerfil(Perfil.ADMINISTRADOR.getDescricao());
-			usuarioService.cadastrar(admin);
+			admin.setHabilitado(true);
+			usuarioRepository.save(admin);
 		}
 	}
 }
