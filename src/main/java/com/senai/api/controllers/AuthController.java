@@ -58,9 +58,7 @@ public class AuthController {
 	@ApiResponse(responseCode = "401", description = "Usuário não autorizado.",
 		    content = @Content(mediaType = "application/json"))
 	public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid AuthDto authDto) throws Exception {
-		System.out.println("AQUI");
 		SecretKey key = CryptoUtil.getFixedSecretKey();
-		System.out.println("AQUI");
 		String cpf = usuarioService.formatCpf(authDto.getCpf());
 		System.out.println(authDto.getCpf());
 		String cpfCriptografado = CryptoUtil.encryptCPF(cpf, key);
