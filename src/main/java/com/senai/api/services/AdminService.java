@@ -4,6 +4,7 @@ import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,10 +29,11 @@ public class AdminService {
 	private String senha;
 
 	public ResponseEntity<?> initializerAdmin() throws Exception {
-
+		System.out.println("Inicializou o ponto");
 		SecretKey key = CryptoUtil.getFixedSecretKey();
 		String cpfCriptografado = CryptoUtil.encryptCPF(cpf, key);
 		if (!usuarioService.verificarCpfExistente(cpf)) {
+			System.out.println("Analisou o CPF");
 			Usuario admin = new Usuario();
 			admin.setCpf(cpfCriptografado);
 			admin.setNome("Admin");
@@ -39,8 +41,9 @@ public class AdminService {
 			admin.setPerfil(Perfil.ADMINISTRADOR.getDescricao());
 			admin.setHabilitado(true);
 			usuarioRepository.save(admin);
+			System.out.println("Submeteu");
 		}
-		return null;
+		return ResponseEntity.status(HttpStatus.CREATED).body("ADM CRIADO.");
 	}
 
 }
