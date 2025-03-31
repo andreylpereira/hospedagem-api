@@ -24,7 +24,7 @@ public class Acomodacao {
 	private String contentType;
 	
 	@Lob
-	@Column(columnDefinition = "LONGTEXT")
+	@Column(columnDefinition = "TEXT")
 	private String base64Image;
 
 	@OneToMany(mappedBy = "acomodacao", cascade = CascadeType.ALL)
