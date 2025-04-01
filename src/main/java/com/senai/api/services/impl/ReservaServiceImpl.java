@@ -131,14 +131,17 @@ public class ReservaServiceImpl implements ReservaService {
 		return null;
 	}
 
-	private ResponseEntity<?> validarDatas(ReservaDto reservaDto) {
-		if (reservaDto.getDataInicio() == null || reservaDto.getDataFim() == null
-				|| reservaDto.getDataFim().isBefore(reservaDto.getDataInicio())) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body("O período de reserva não foi definido corretamente.");
+	// Valida se as datas não estão ínvalidas
+		private ResponseEntity<?> validarDatas(ReservaDto reservaDto) {
+
+			Boolean isNull = (reservaDto.getDataInicio() == null || reservaDto.getDataFim() == null);
+			Boolean isInvalidInputs = (reservaDto.getDataFim().isBefore(reservaDto.getDataInicio()));
+			if (isNull || isInvalidInputs) {
+				return ResponseEntity.status(HttpStatus.CONFLICT)
+						.body("O período de reserva não foi definido corretamente.");
+			}
+			return null;
 		}
-		return null;
-	}
 
 	// Método otimizado de verificação de disponibilidade
 	@Override
