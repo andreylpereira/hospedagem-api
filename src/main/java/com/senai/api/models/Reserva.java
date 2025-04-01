@@ -32,7 +32,10 @@ public class Reserva {
 	@JsonIgnore
 	private Acomodacao acomodacao;
 
+	@Column(name = "data_inicio")
 	private LocalDateTime dataInicio;
+
+	@Column(name = "data_fim")
 	private LocalDateTime dataFim;
 
 	@Enumerated(EnumType.STRING)
