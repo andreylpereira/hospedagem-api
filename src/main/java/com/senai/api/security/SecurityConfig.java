@@ -16,8 +16,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.senai.api.enums.Perfil;
 
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
 
 @Configuration
 @EnableWebSecurity
@@ -49,9 +47,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/usuario/lista/**").hasAnyAuthority(Perfil.FUNCIONARIO.getDescricao(), Perfil.ADMINISTRADOR.getDescricao())
                 .requestMatchers("/api/usuario/atualizarSenha/**").hasAnyAuthority(Perfil.FUNCIONARIO.getDescricao(), Perfil.ADMINISTRADOR.getDescricao())
                 .requestMatchers("/api/usuario/cadastrarUsuario/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao())
+                .requestMatchers("/api/hospedagem/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao(), Perfil.FUNCIONARIO.getDescricao())
                 .requestMatchers("/api/usuario/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao())
-//                .requestMatchers("/api/hospedagem/clientes/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao(), Perfil.FUNCIONARIO.getDescricao())
-//                .requestMatchers("/api/hospedagem/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao(), Perfil.FUNCIONARIO.getDescricao())
                 .anyRequest().authenticated() 
             )
             .httpBasic();
