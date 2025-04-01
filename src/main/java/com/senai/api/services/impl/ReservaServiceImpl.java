@@ -47,10 +47,12 @@ public class ReservaServiceImpl implements ReservaService {
 
 		ResponseEntity<?> validarDatas = validarDatas(reservaDto);
 		if (validarDatas != null) {
+			System.out.println("LOG1");
 			return validarDatas;
 		}
 		ResponseEntity<?> validarReserva = validarReserva(reservaDto);
 		if (validarReserva != null) {
+			System.out.println("LOG1");
 			return validarReserva;
 		}
 
@@ -216,9 +218,9 @@ public class ReservaServiceImpl implements ReservaService {
 	@Override
 	public Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim) {
 
-	    List<Reserva> reservasAcomodacao = reservaRepository.findAllByAcomodacaoId(acomodacaoId);
+	    List<ReservaDto> reservasAcomodacao = reservaRepository.findAllByAcomodacaoId(acomodacaoId);
 
-	    for (Reserva reserva : reservasAcomodacao) {
+	    for (ReservaDto reserva : reservasAcomodacao) {
 	        LocalDateTime reservaInicio = reserva.getDataInicio();
 	        LocalDateTime reservaFim = reserva.getDataFim();
 
@@ -250,13 +252,13 @@ public class ReservaServiceImpl implements ReservaService {
 	public Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim,
 	        Integer reservaId) {
 
-	    List<Reserva> reservasAcomodacao = reservaRepository.findAllByAcomodacaoId(acomodacaoId);
+	    List<ReservaDto> reservasAcomodacao = reservaRepository.findAllByAcomodacaoId(acomodacaoId);
 	    
-	    Reserva reservaAtual = reservaRepository.getReferenceById(reservaId);
+	    reservasAcomodacao.removeIf(reserva -> reserva.getId().equals(acomodacaoId));
 
-	    reservasAcomodacao.remove(reservaAtual);
+	    //remove(reservaAtual);
 
-	    for (Reserva reserva : reservasAcomodacao) {
+	    for (ReservaDto reserva : reservasAcomodacao) {
 	        LocalDateTime reservaInicio = reserva.getDataInicio();
 	        LocalDateTime reservaFim = reserva.getDataFim();
 
