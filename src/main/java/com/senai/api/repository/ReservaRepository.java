@@ -23,4 +23,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
            "AND r.id != :reservaId " +
            "AND ((r.dataInicio BETWEEN :dataInicio AND :dataFim) OR (r.dataFim BETWEEN :dataInicio AND :dataFim))")
     boolean existsReservaConflitanteParaEdicao(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim, Integer reservaId);
+
+
    }
