@@ -118,7 +118,7 @@ public class ClienteServiceImpl implements ClienteService {
 				try {
 					String cpfDecriptografado = CryptoUtil.decryptCPF(cliente.getCpf(), key);
 					cliente.setCpf(cpfDecriptografado);
-	
+					cliente.setReservas(null);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
