@@ -38,27 +38,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    	http.csrf(csrf -> csrf.disable())
-        .exceptionHandling(exceptionHandling -> 
-            exceptionHandling.authenticationEntryPoint(authEntryPoint)
-        )
-        .sessionManagement(sessionManagement -> 
-            sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        )
-        .authorizeHttpRequests(authorizeRequests -> 
-            authorizeRequests
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/api/auth/admin/**", "/api/auth/login/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+        http.csrf(csrf -> csrf.disable())
+            .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(authEntryPoint)) 
+            .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) 
+            .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() 
+                .requestMatchers("/api/auth/admin/**", "/api/auth/login/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() 
                 .requestMatchers("/api/usuario/lista/**").hasAnyAuthority(Perfil.FUNCIONARIO.getDescricao(), Perfil.ADMINISTRADOR.getDescricao())
                 .requestMatchers("/api/usuario/atualizarSenha/**").hasAnyAuthority(Perfil.FUNCIONARIO.getDescricao(), Perfil.ADMINISTRADOR.getDescricao())
-                .requestMatchers("/api/usuario/cadastrarUsuario/**").hasAuthority(Perfil.ADMINISTRADOR.getDescricao())
+                .requestMatchers("/api/usuario/cadastrarUsuario/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao())
                 .requestMatchers("/api/hospedagem/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao(), Perfil.FUNCIONARIO.getDescricao())
-                .requestMatchers("/api/usuario/**").hasAuthority(Perfil.ADMINISTRADOR.getDescricao())
-                .anyRequest().authenticated()
-        )
-        .httpBasic();
+                .requestMatchers("/api/usuario/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao())
+                .anyRequest().authenticated() 
+            )
+            .httpBasic();
 
-    http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         // Configuração CORS para a porta da aplicação react
         http.cors(cors -> cors.configurationSource(request -> {
