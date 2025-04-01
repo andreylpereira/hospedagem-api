@@ -140,13 +140,14 @@ public class ReservaServiceImpl implements ReservaService {
     // Método otimizado de verificação de disponibilidade
     @Override
     public Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim) {
-        return reservaRepository.existsReservaConflitante(acomodacaoId, dataInicio, dataFim, Status.CONCLUIDO, Status.CANCELADO);
+        return reservaRepository.existsReservaConflitante(acomodacaoId, dataInicio, dataFim);
     }
 
     @Override
     public Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim, Integer reservaId) {
-        return reservaRepository.existsReservaConflitanteParaEdicao(acomodacaoId, dataInicio, dataFim, reservaId, Status.CONCLUIDO, Status.CANCELADO);
+        return reservaRepository.existsReservaConflitanteParaEdicao(acomodacaoId, dataInicio, dataFim, reservaId);
     }
+
 
     private Usuario fetchUsuario(Integer usuarioId) {
         return usuarioId != null ? usuarioRepository.findById(usuarioId).orElse(null) : null;
