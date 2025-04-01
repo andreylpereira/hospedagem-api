@@ -254,9 +254,13 @@ public class ReservaServiceImpl implements ReservaService {
 
 	    List<ReservaDto> reservasAcomodacao = reservaRepository.findAllByAcomodacaoId(acomodacaoId);
 	    
-	    reservasAcomodacao.removeIf(reserva -> reserva.getId().equals(acomodacaoId));
+	    Reserva reservaAtual = reservaRepository.getReferenceById(reservaId);
 
-	    //remove(reservaAtual);
+	    ReservaDto reservaAtualDto = null;
+	    reservaAtualDto.setAcomodacaoId(acomodacaoId);
+	    reservaAtualDto.setId(reservaId);
+	    BeanUtils.copyProperties(reservaAtual, reservaAtualDto);
+	    reservasAcomodacao.remove(reservaAtualDto);
 
 	    for (ReservaDto reserva : reservasAcomodacao) {
 	        LocalDateTime reservaInicio = reserva.getDataInicio();
