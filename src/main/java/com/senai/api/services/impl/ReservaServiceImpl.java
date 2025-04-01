@@ -47,12 +47,10 @@ public class ReservaServiceImpl implements ReservaService {
 
 		ResponseEntity<?> validarDatas = validarDatas(reservaDto);
 		if (validarDatas != null) {
-			System.out.println("LOG1");
 			return validarDatas;
 		}
 		ResponseEntity<?> validarReserva = validarReserva(reservaDto);
 		if (validarReserva != null) {
-			System.out.println("LOG1");
 			return validarReserva;
 		}
 
