@@ -93,9 +93,14 @@ public class ReservaServiceImpl implements ReservaService {
 	@Override
 	public ResponseEntity<?> editar(ReservaDto reservaDto, Integer reservaId) {
 
+		Optional<Reserva> reservaExistenteOpt = reservaRepository.findById(reservaId);
 		if (reservaDto.getDataInicio() == null || reservaDto.getDataFim() == null) {
 			return ResponseEntity.status(HttpStatus.CONFLICT)
 					.body("O período de reserva não foi definido corretamente.");
+		}
+
+		if (reservaExistenteOpt.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reserva não encontrada.");
 		}
 
 		ResponseEntity<?> validarDatas = validarDatas(reservaDto);
@@ -246,20 +251,8 @@ public class ReservaServiceImpl implements ReservaService {
 	        Integer reservaId) {
 
 	    List<ReservaDto> reservasAcomodacao = reservaRepository.findAllByAcomodacaoId(acomodacaoId);
-	    
-	    Reserva reservaAtual = reservaRepository.getReferenceById(reservaId);
-	    
-	    if (reservaAtual.getId() == null) {
-			return false;
-		}
-
-	    ReservaDto reservaAtualDto = null;
-	    reservaAtualDto.setAcomodacaoId(acomodacaoId);
-	    
-	    reservaAtualDto.setId(reservaId);
-	    BeanUtils.copyProperties(reservaAtual, reservaAtualDto);
-	    System.out.println(reservaAtualDto.getClienteId());
-	    reservasAcomodacao.remove(reservaAtualDto);
+	 
+	    reservasAcomodacao.removeIf(reserva -> reserva.getId().equals(reservaId));
 
 	    for (ReservaDto reserva : reservasAcomodacao) {
 	        LocalDateTime reservaInicio = reserva.getDataInicio();
