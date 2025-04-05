@@ -255,8 +255,10 @@ public class ReservaServiceImpl implements ReservaService {
 
 	    ReservaDto reservaAtualDto = null;
 	    reservaAtualDto.setAcomodacaoId(acomodacaoId);
+	    
 	    reservaAtualDto.setId(reservaId);
 	    BeanUtils.copyProperties(reservaAtual, reservaAtualDto);
+	    System.out.println(reservaAtualDto.getClienteId());
 	    reservasAcomodacao.remove(reservaAtualDto);
 
 	    for (ReservaDto reserva : reservasAcomodacao) {
