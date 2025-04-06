@@ -43,7 +43,7 @@ public class SecurityConfig {
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) 
             .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() 
-                .requestMatchers("/api/auth/admin/**", "/api/auth/login/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() 
+                .requestMatchers("/api/auth/login/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() 
                 .requestMatchers("/api/usuario/lista/**").hasAnyAuthority(Perfil.FUNCIONARIO.getDescricao(), Perfil.ADMINISTRADOR.getDescricao())
                 .requestMatchers("/api/usuario/atualizarSenha/**").hasAnyAuthority(Perfil.FUNCIONARIO.getDescricao(), Perfil.ADMINISTRADOR.getDescricao())
                 .requestMatchers("/api/usuario/cadastrarUsuario/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao())

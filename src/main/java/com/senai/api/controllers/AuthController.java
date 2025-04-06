@@ -1,6 +1,5 @@
 package com.senai.api.controllers;
 
-
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,14 +54,12 @@ public class AuthController {
 	@PostMapping("/api/auth/login")
 	@Operation(summary = "Autentica e autoriza usuário", description = "Com credênciais de cpf e senha efetua autenticação na aplicação retornando um token.")
 	@ApiResponse(responseCode = "202", description = "Usuário autenticado com sucesso.")
-	@ApiResponse(responseCode = "401", description = "Usuário não autorizado.",
-		    content = @Content(mediaType = "application/json"))
+	@ApiResponse(responseCode = "401", description = "Usuário não autorizado.", content = @Content(mediaType = "application/json"))
 	public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid AuthDto authDto) throws Exception {
 		SecretKey key = CryptoUtil.getFixedSecretKey();
 		String cpf = usuarioService.formatCpf(authDto.getCpf());
-		System.out.println(authDto.getCpf());
 		String cpfCriptografado = CryptoUtil.encryptCPF(cpf, key);
-		System.out.println(cpfCriptografado);
+
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(cpfCriptografado, authDto.getSenha()));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
