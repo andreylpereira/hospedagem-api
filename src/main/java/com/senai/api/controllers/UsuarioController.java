@@ -27,14 +27,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Usuário", description = "Operações para gerenciar usuários")
 public class UsuarioController {
 
-	private UsuarioService usuarioService;
-	private UsuarioRepository usuarioRepository;
-
 	@Autowired
-	public UsuarioController(UsuarioService usuarioService, UsuarioRepository usuarioRepository) {
-		this.usuarioService = usuarioService;
-		this.usuarioRepository = usuarioRepository;
-	}
+	private UsuarioService usuarioService;
+	
 
 	@GetMapping("/lista")
 	@Operation(summary = "Retorna uma lista de usuários", description = "Recupera uma lista de usuários e seus respectivos dados do banco de dados.")

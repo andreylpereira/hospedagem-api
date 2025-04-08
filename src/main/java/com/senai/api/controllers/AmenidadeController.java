@@ -27,18 +27,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Amenidade", description = "Operações para gerenciar as amenidades")
 public class AmenidadeController {
 
-	private AmenidadeService amenidadeService;
-	private AmenidadeRepository amenidadeRepository;
-
 	@Autowired
-	public AmenidadeController(AmenidadeService amenidadeService, AmenidadeRepository amenidadeRepository) {
-		this.amenidadeService = amenidadeService;
-		this.amenidadeRepository = amenidadeRepository;
-	}
+	private AmenidadeService amenidadeService;
+
 
 	@PostMapping("{usuarioId}/amenidades")
 	@Operation(summary = "Cadastra amenidade", description = "Com usuarioId como parâmetro e um objeto amenidade no corpo da requisição, efetua cadastro da amenidade no banco de dados.")
-	@ApiResponse(responseCode = "201", description = "Amenidade criada com sucesso.",
+	@ApiResponse(responseCode = "200", description = "Amenidade criada com sucesso.",
 		    content = @Content(mediaType = "application/json"))
 	@ApiResponse(responseCode = "400", description = "Os dados da amenidade estão inválidos.",
 		    content = @Content(mediaType = "application/json"))
