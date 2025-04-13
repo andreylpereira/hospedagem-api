@@ -12,9 +12,10 @@ public class ReservaDto {
 	private LocalDateTime dataInicio;
 	private LocalDateTime dataFim;
 	private Status status;
+	private double valorTotal;
 
 	public ReservaDto(Integer id, Integer funcionarioId, Integer clienteId, Integer acomodacaoId,
-			LocalDateTime dataInicio, LocalDateTime dataFim, Status status) {
+			LocalDateTime dataInicio, LocalDateTime dataFim, Status status, double valorTotal) {
 		this.id = id;
 		this.funcionarioId = funcionarioId;
 		this.clienteId = clienteId;
@@ -22,6 +23,7 @@ public class ReservaDto {
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
 		this.status = status;
+		this.valorTotal = valorTotal;
 	}
 
 	public Integer getId() {
@@ -78,6 +80,14 @@ public class ReservaDto {
 
 	public void setStatus(Status status) {
 		this.status = status;
+	}
+
+	public double getValorTotal() {
+		return valorTotal;
+	}
+
+	public void setValorTotal(double valorTotal) {
+		this.valorTotal = valorTotal;
 	}
 
 }

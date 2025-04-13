@@ -165,7 +165,7 @@ public class ReservaServiceImpl implements ReservaService {
 		Integer acomodacaoId = reserva.getAcomodacao() != null ? reserva.getAcomodacao().getId() : null;
 
 		return new ReservaDto(reserva.getId(), responsavelId, clienteId, acomodacaoId, reserva.getDataInicio(),
-				reserva.getDataFim(), reserva.getStatus());
+				reserva.getDataFim(), reserva.getStatus(), reserva.getValorTotal());
 	}
 
 	// Lista todas as reservas
@@ -179,7 +179,7 @@ public class ReservaServiceImpl implements ReservaService {
 			Integer acomodacaoId = reserva.getAcomodacao().getId();
 
 			return new ReservaDto(reserva.getId(), responsavelId, clienteId, acomodacaoId, reserva.getDataInicio(),
-					reserva.getDataFim(), reserva.getStatus());
+					reserva.getDataFim(), reserva.getStatus(), reserva.getValorTotal());
 		}).collect(Collectors.toList());
 	}
 
