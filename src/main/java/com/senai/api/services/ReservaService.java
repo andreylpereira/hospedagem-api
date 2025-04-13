@@ -24,4 +24,6 @@ public interface ReservaService {
 	Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim,
 			Integer reservaId);
 
+	int calcularDiferencaEmDias(LocalDateTime dataInicio, LocalDateTime dataFim);
+
 }

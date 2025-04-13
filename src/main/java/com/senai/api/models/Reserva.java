@@ -38,6 +38,9 @@ public class Reserva {
 	@Column(name = "data_fim")
 	private LocalDateTime dataFim;
 
+	@Column(name = "valor_total")
+	private double valorTotal;
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
 	private Status status;
@@ -46,13 +49,14 @@ public class Reserva {
 	}
 
 	public Reserva(Integer id, Usuario funcionario, Cliente cliente, Acomodacao acomodacao, LocalDateTime dataInicio,
-			LocalDateTime dataFim, Status status) {
+			LocalDateTime dataFim, double valorTotal, Status status) {
 		this.id = id;
 		this.funcionario = funcionario;
 		this.cliente = cliente;
 		this.acomodacao = acomodacao;
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
+		this.valorTotal = valorTotal;
 		this.status = status;
 	}
 
@@ -102,6 +106,14 @@ public class Reserva {
 
 	public void setDataFim(LocalDateTime dataFim) {
 		this.dataFim = dataFim;
+	}
+
+	public double getValorTotal() {
+		return valorTotal;
+	}
+
+	public void setValorTotal(double valorTotal) {
+		this.valorTotal = valorTotal;
 	}
 
 	public Status getStatus() {

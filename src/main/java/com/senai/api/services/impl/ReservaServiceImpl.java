@@ -1,6 +1,8 @@
 package com.senai.api.services.impl;
 
+
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -79,6 +81,11 @@ public class ReservaServiceImpl implements ReservaService {
 		reserva.setFuncionario(funcionario);
 		reserva.setCliente(cliente);
 		reserva.setAcomodacao(acomodacao);
+		
+		int totalDias = calcularDiferencaEmDias(reserva.getDataInicio(),reserva.getDataFim());
+		double valorTotal = totalDias * acomodacao.getPreco();
+		
+		reserva.setValorTotal(valorTotal);
 		reservaRepository.save(reserva);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body("Reserva efetuada com sucesso.");
@@ -138,6 +145,11 @@ public class ReservaServiceImpl implements ReservaService {
 		reserva.setFuncionario(funcionario);
 		reserva.setCliente(cliente);
 		reserva.setAcomodacao(acomodacao);
+		
+		int totalDias = calcularDiferencaEmDias(reserva.getDataInicio(),reserva.getDataFim());
+		double valorTotal = totalDias * acomodacao.getPreco();
+		
+		reserva.setValorTotal(valorTotal);
 		reservaRepository.save(reserva);
 
 		return ResponseEntity.status(HttpStatus.OK).body("Reserva atualizada com sucesso.");
@@ -273,6 +285,16 @@ public class ReservaServiceImpl implements ReservaService {
 
 	    return true; 
 	}
+	
+	
+	/*
+	 * Calcula a diferença em dias entre duas datas, o retorno vai ser um inteiro e será somado +1 
+	 * para considerar a dataInicio no calculo
+	 * */
+	@Override
+	public int calcularDiferencaEmDias(LocalDateTime dataInicio, LocalDateTime dataFim) {
+        return (int) ChronoUnit.DAYS.between(dataInicio, dataFim) + 1;
+    }
 
 
 }
