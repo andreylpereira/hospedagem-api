@@ -22,14 +22,14 @@ class ReservaServiceTest {
 
     @Test
     void testCadastrar() {
-        ReservaDto reservaDto = new ReservaDto(null, null, null, null, LocalDateTime.now(), LocalDateTime.now().plusDays(1), Status.PENDENTE);
+        ReservaDto reservaDto = new ReservaDto(null, null, null, null, LocalDateTime.now(), LocalDateTime.now().plusDays(1), Status.PENDENTE, 0.0);
         when(reservaService.cadastrar(reservaDto)).thenReturn(ResponseEntity.ok().build());
         assertDoesNotThrow(() -> reservaService.cadastrar(reservaDto));
     }
 
     @Test
     void testEditar() {
-        ReservaDto reservaDto = new ReservaDto(null, null, null, null, LocalDateTime.now(), LocalDateTime.now().plusDays(1), Status.CONFIRMADO);
+        ReservaDto reservaDto = new ReservaDto(null, null, null, null, LocalDateTime.now(), LocalDateTime.now().plusDays(1), Status.CONFIRMADO, 0.0);
         when(reservaService.editar(reservaDto, 1)).thenReturn(ResponseEntity.ok().build());
         assertDoesNotThrow(() -> reservaService.editar(reservaDto, 1));
     }
@@ -42,7 +42,7 @@ class ReservaServiceTest {
 
     @Test
     void testReservaById() {
-        when(reservaService.reservaById(1)).thenReturn(new ReservaDto(null, null, null, null, LocalDateTime.now(), LocalDateTime.now().plusDays(1), Status.CONCLUIDO));
+        when(reservaService.reservaById(1)).thenReturn(new ReservaDto(null, null, null, null, LocalDateTime.now(), LocalDateTime.now().plusDays(1), Status.CONCLUIDO, 0.0));
         assertDoesNotThrow(() -> reservaService.reservaById(1));
     }
 
