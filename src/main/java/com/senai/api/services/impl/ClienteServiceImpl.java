@@ -88,7 +88,6 @@ public class ClienteServiceImpl implements ClienteService {
 					.body("Formulário está incompleto, preencha todos os dados.");
 		}
 
-		String cpf = usuarioService.formatCpf(clienteDto.getCpf());
 		Boolean isUser = usuarioRepository.findById(usuarioId).isPresent();
 
 		Boolean isExists = clienteRepository.existsById(clienteId);
@@ -98,8 +97,10 @@ public class ClienteServiceImpl implements ClienteService {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Funcionário não cadastrado no sistema.");
 		}
 
-		String cpfCriptografado = CryptoUtil.encryptCPF(cpf, key);
+		Cliente dadosCliente = clienteRepository.getReferenceById(clienteId);
+		String cpfCriptografado = dadosCliente.getCpf();
 		Cliente cliente = new Cliente();
+		
 		Usuario funcionario = usuarioRepository.getReferenceById(usuarioId);
 		BeanUtils.copyProperties(clienteDto, cliente);
 		cliente.setId(clienteId);
@@ -116,8 +117,8 @@ public class ClienteServiceImpl implements ClienteService {
 			List<Cliente> clientes = clienteRepository.findAll();
 			clientes.forEach(cliente -> {
 				try {
-					String cpfDecriptografado = CryptoUtil.decryptCPF(cliente.getCpf(), key);
-					cliente.setCpf(cpfDecriptografado);
+					String cpfComMascara = mascararCPF(cliente.getCpf());
+					cliente.setCpf(cpfComMascara);
 					cliente.setReservas(null);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -141,4 +142,13 @@ public class ClienteServiceImpl implements ClienteService {
 		}
 	}
 
+	/*
+	 * Mascara para evitar que o frontend receba o cpf completo
+	 * */
+	public static String mascararCPF(String cpf) {
+        if (cpf == null || cpf.length() != 11) {
+            throw new IllegalArgumentException("O CPF deve conter exatamente 11 dígitos.");
+        }
+        return cpf.substring(0, 6) + "*****";
+    }
 }
