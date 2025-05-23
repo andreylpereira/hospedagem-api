@@ -117,8 +117,8 @@ public class ClienteServiceImpl implements ClienteService {
 			List<Cliente> clientes = clienteRepository.findAll();
 			clientes.forEach(cliente -> {
 				try {
-					String cpfComMascara = mascararCPF(cliente.getCpf());
-					cliente.setCpf(cpfComMascara);
+					String cpfDecriptografado = CryptoUtil.decryptCPF(cliente.getCpf(), key);
+					cliente.setCpf(mascararCPF(cpfDecriptografado));
 					cliente.setReservas(null);
 				} catch (Exception e) {
 					e.printStackTrace();
