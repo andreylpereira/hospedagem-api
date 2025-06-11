@@ -54,7 +54,7 @@ public class ClienteServiceImpl implements ClienteService {
 		Boolean isValid = usuarioService.validCpf(cpf);
 		String cpfCriptografado = CryptoUtil.encryptCPF(cpf, key);
 		Boolean isUser = usuarioRepository.findById(usuarioId).isPresent();
-		Boolean isExists = clienteRepository.existsByCpf(cpf);
+		Boolean isExists = clienteRepository.existsByCpf(cpfCriptografado);
 
 		if (!isValid) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Cliente com o CPF inválido.");
@@ -99,6 +99,7 @@ public class ClienteServiceImpl implements ClienteService {
 
 		Cliente dadosCliente = clienteRepository.getReferenceById(clienteId);
 		String cpfCriptografado = dadosCliente.getCpf();
+		
 		Cliente cliente = new Cliente();
 		
 		Usuario funcionario = usuarioRepository.getReferenceById(usuarioId);
