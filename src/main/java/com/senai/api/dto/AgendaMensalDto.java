@@ -15,13 +15,14 @@ public class AgendaMensalDto {
 	private Integer acomodacaoId;
 	private LocalDateTime dataInicio;
 	private LocalDateTime dataFim;
+	private double valorTotal;
 
 	public AgendaMensalDto() {
 	}
 
 	public AgendaMensalDto(Integer reservaId, String clienteNome, String clienteEmail, String clienteTelefone,
 			String funcionarioNome, String acomodacaoNome, String reservaStatus, Integer acomodacaoId,
-			LocalDateTime dataInicio, LocalDateTime dataFim) {
+			LocalDateTime dataInicio, LocalDateTime dataFim, double valorTotal) {
 		this.reservaId = reservaId;
 		this.clienteNome = clienteNome;
 		this.clienteEmail = clienteEmail;
@@ -32,6 +33,7 @@ public class AgendaMensalDto {
 		this.acomodacaoId = acomodacaoId;
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
+		this.valorTotal = valorTotal;
 	}
 
 	public Integer getReservaId() {
@@ -112,6 +114,14 @@ public class AgendaMensalDto {
 
 	public void setDataFim(LocalDateTime dataFim) {
 		this.dataFim = dataFim;
+	}
+
+	public double getValorTotal() {
+		return valorTotal;
+	}
+
+	public void setValorTotal(double valorTotal) {
+		this.valorTotal = valorTotal;
 	}
 
 }

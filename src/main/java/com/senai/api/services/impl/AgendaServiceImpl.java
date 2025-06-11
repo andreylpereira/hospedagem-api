@@ -164,7 +164,8 @@ public class AgendaServiceImpl implements AgendaService {
 	                	    reserva.getStatus() != null ? reserva.getStatus().toString() : "Status não informado",
 	                	    acomodacao != null ? acomodacao.getId() : null,  
 	                	    dataInicio, 
-	                	    dataFim
+	                	    dataFim,
+	                	    reserva.getValorTotal()
 	                	);
 
 
@@ -227,7 +228,8 @@ public class AgendaServiceImpl implements AgendaService {
 	                        reserva.getStatus() != null ? reserva.getStatus().toString() : "Status não informado",
 	                        acomodacao != null ? acomodacao.getId() : null,  
 	                        dataInicio, 
-	                        dataFim
+	                        dataFim,
+	                        reserva.getValorTotal()
 	                    ); 
 
 	                    reservasAdicionadas.add(reserva.getId()); 

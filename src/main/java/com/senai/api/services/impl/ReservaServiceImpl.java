@@ -1,6 +1,8 @@
 package com.senai.api.services.impl;
 
+
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -79,6 +81,11 @@ public class ReservaServiceImpl implements ReservaService {
 		reserva.setFuncionario(funcionario);
 		reserva.setCliente(cliente);
 		reserva.setAcomodacao(acomodacao);
+		
+		int totalDias = calcularDiferencaEmDias(reserva.getDataInicio(),reserva.getDataFim());
+		double valorTotal = totalDias * acomodacao.getPreco();
+		
+		reserva.setValorTotal(valorTotal);
 		reservaRepository.save(reserva);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body("Reserva efetuada com sucesso.");
@@ -138,6 +145,11 @@ public class ReservaServiceImpl implements ReservaService {
 		reserva.setFuncionario(funcionario);
 		reserva.setCliente(cliente);
 		reserva.setAcomodacao(acomodacao);
+		
+		int totalDias = calcularDiferencaEmDias(reserva.getDataInicio(),reserva.getDataFim());
+		double valorTotal = totalDias * acomodacao.getPreco();
+		
+		reserva.setValorTotal(valorTotal);
 		reservaRepository.save(reserva);
 
 		return ResponseEntity.status(HttpStatus.OK).body("Reserva atualizada com sucesso.");
@@ -153,7 +165,7 @@ public class ReservaServiceImpl implements ReservaService {
 		Integer acomodacaoId = reserva.getAcomodacao() != null ? reserva.getAcomodacao().getId() : null;
 
 		return new ReservaDto(reserva.getId(), responsavelId, clienteId, acomodacaoId, reserva.getDataInicio(),
-				reserva.getDataFim(), reserva.getStatus());
+				reserva.getDataFim(), reserva.getStatus(), reserva.getValorTotal());
 	}
 
 	// Lista todas as reservas
@@ -167,7 +179,7 @@ public class ReservaServiceImpl implements ReservaService {
 			Integer acomodacaoId = reserva.getAcomodacao().getId();
 
 			return new ReservaDto(reserva.getId(), responsavelId, clienteId, acomodacaoId, reserva.getDataInicio(),
-					reserva.getDataFim(), reserva.getStatus());
+					reserva.getDataFim(), reserva.getStatus(), reserva.getValorTotal());
 		}).collect(Collectors.toList());
 	}
 
@@ -216,9 +228,9 @@ public class ReservaServiceImpl implements ReservaService {
 	@Override
 	public Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim) {
 
-	    List<Reserva> reservasAcomodacao = reservaRepository.findAllByAcomodacaoId(acomodacaoId);
+	    List<ReservaDto> reservasAcomodacao = reservaRepository.findAllByAcomodacaoId(acomodacaoId);
 
-	    for (Reserva reserva : reservasAcomodacao) {
+	    for (ReservaDto reserva : reservasAcomodacao) {
 	        LocalDateTime reservaInicio = reserva.getDataInicio();
 	        LocalDateTime reservaFim = reserva.getDataFim();
 
@@ -250,13 +262,11 @@ public class ReservaServiceImpl implements ReservaService {
 	public Boolean verificarDisponibilidade(Integer acomodacaoId, LocalDateTime dataInicio, LocalDateTime dataFim,
 	        Integer reservaId) {
 
-	    List<Reserva> reservasAcomodacao = reservaRepository.findAllByAcomodacaoId(acomodacaoId);
-	    
-	    Reserva reservaAtual = reservaRepository.getReferenceById(reservaId);
+	    List<ReservaDto> reservasAcomodacao = reservaRepository.findAllByAcomodacaoId(acomodacaoId);
+	 
+	    reservasAcomodacao.removeIf(reserva -> reserva.getId().equals(reservaId));
 
-	    reservasAcomodacao.remove(reservaAtual);
-
-	    for (Reserva reserva : reservasAcomodacao) {
+	    for (ReservaDto reserva : reservasAcomodacao) {
 	        LocalDateTime reservaInicio = reserva.getDataInicio();
 	        LocalDateTime reservaFim = reserva.getDataFim();
 
@@ -275,6 +285,16 @@ public class ReservaServiceImpl implements ReservaService {
 
 	    return true; 
 	}
+	
+	
+	/*
+	 * Calcula a diferença em dias entre duas datas, o retorno vai ser um inteiro e será somado +1 
+	 * para considerar a dataInicio no calculo
+	 * */
+	@Override
+	public int calcularDiferencaEmDias(LocalDateTime dataInicio, LocalDateTime dataFim) {
+        return (int) ChronoUnit.DAYS.between(dataInicio, dataFim) + 1;
+    }
 
 
 }

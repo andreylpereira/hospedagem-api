@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
 import com.senai.api.enums.Perfil;
 import com.senai.api.models.Usuario;
 import com.senai.api.repository.UsuarioRepository;

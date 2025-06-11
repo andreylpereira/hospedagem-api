@@ -16,8 +16,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.senai.api.enums.Perfil;
 
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
 
 @Configuration
 @EnableWebSecurity
@@ -46,12 +44,12 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() 
                 .requestMatchers("/api/auth/login/**").permitAll() 
-                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() 
                 .requestMatchers("/api/usuario/lista/**").hasAnyAuthority(Perfil.FUNCIONARIO.getDescricao(), Perfil.ADMINISTRADOR.getDescricao())
                 .requestMatchers("/api/usuario/atualizarSenha/**").hasAnyAuthority(Perfil.FUNCIONARIO.getDescricao(), Perfil.ADMINISTRADOR.getDescricao())
                 .requestMatchers("/api/usuario/cadastrarUsuario/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao())
-                .requestMatchers("/api/usuario/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao())
                 .requestMatchers("/api/hospedagem/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao(), Perfil.FUNCIONARIO.getDescricao())
+                .requestMatchers("/api/usuario/**").hasAnyAuthority(Perfil.ADMINISTRADOR.getDescricao())
                 .anyRequest().authenticated() 
             )
             .httpBasic();
@@ -61,7 +59,7 @@ public class SecurityConfig {
         // Configuração CORS para a porta da aplicação react
         http.cors(cors -> cors.configurationSource(request -> {
             var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-            corsConfig.setAllowedOrigins(java.util.List.of("http://localhost:3000")); 
+            corsConfig.setAllowedOrigins(java.util.List.of("https://hospedagem-frontend.onrender.com")); 
             corsConfig.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); 
             corsConfig.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type")); 
             corsConfig.setAllowCredentials(true); 

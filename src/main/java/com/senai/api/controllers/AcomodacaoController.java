@@ -27,14 +27,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Acomodação", description = "Operações para gerenciar acomodações")
 public class AcomodacaoController {
 
-	private AcomodacaoService acomodacaoService;
-	private AcomodacaoRepository acomodacaoRepository;
-
 	@Autowired
-	public AcomodacaoController(AcomodacaoService acomodacaoService, AcomodacaoRepository acomodacaoRepository) {
-		this.acomodacaoService = acomodacaoService;
-		this.acomodacaoRepository = acomodacaoRepository;
-	}
+	private AcomodacaoService acomodacaoService;
+
 
 	@PostMapping("{usuarioId}/acomodacoes")
 	@Operation(summary = "Cadastra acomodação", description = "Com usuarioId como parâmetro e um objeto acomodação no corpo da requisição, efetua cadastro da acomodação no banco de dados.")
